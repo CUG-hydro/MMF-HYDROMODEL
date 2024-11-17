@@ -3525,7 +3525,7 @@ CONTAINS
             if(nvar.lt.6)then
 
                scale_factor(nvar) = dble(bound(1,nvar)-bound(2,nvar))/(2.d+0**16-1.d+0)
-               iret =nf90_put_att(ncid,VAR_id(nvar),'scale_factor',scale_factor(nvar))
+               iret =nf90_put_att(ncid, VAR_id(nvar),'scale_factor',scale_factor(nvar))
                call handle_err(iret)
 
                add_offset(nvar) = dble(bound(2,nvar)) + 2.d+0**15. * scale_factor(nvar)
