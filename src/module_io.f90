@@ -1,6 +1,7 @@
 MODULE module_io
 
    use module_parallel
+   use nrtype
 
    implicit none
 
@@ -1979,7 +1980,7 @@ CONTAINS
       character*80 outfile
 
       integer type
-      double precision, dimension(NVAR_total) :: scale_factor, add_offset
+      real, dimension(NVAR_total) :: scale_factor, add_offset
       integer :: start(3), count(3)
 ! variable id
       integer  Times_id
@@ -2420,7 +2421,8 @@ CONTAINS
       character*80 outfile
 
       integer type
-      double precision, dimension(NVAR_total) :: scale_factor, add_offset
+      real :: scale, offset
+      real, dimension(NVAR_total) :: scale_factor, add_offset
       integer :: start(3), count(3)
 ! variable id
       integer  Times_id
@@ -2563,13 +2565,14 @@ CONTAINS
 !          call handle_err(iret)
 
             if(nvar.ne.14)then
-
-               scale_factor(nvar) = dble(bound(1,nvar)-bound(2,nvar))/(2.d+0**16-1.d+0)
-               iret =nf90_put_att(ncid,VAR_id(nvar),'scale_factor',scale_factor(nvar))
+               scale = (bound(1,nvar)-bound(2,nvar))/(2.d+0**16-1.d+0)
+               scale_factor(nvar) = scale
+               iret =nf90_put_att(ncid,VAR_id(nvar),'scale_factor',scale)
                call handle_err(iret)
-
-               add_offset(nvar) = dble(bound(2,nvar)) + 2.d+0**15. * scale_factor(nvar)
-               iret = nf90_put_att(ncid, VAR_id(nvar),'add_offset',add_offset(nvar))
+              
+               offset = (bound(2,nvar)) + 2.d+0**15. * scale_factor(nvar)
+               add_offset(nvar) = offset
+               iret = nf90_put_att(ncid, VAR_id(nvar),'add_offset',offset)
                call handle_err(iret)
 
             endif
@@ -3405,6 +3408,8 @@ CONTAINS
       integer  iret
 ! netCDF id
       integer  ncid
+      ! double precision scale, offset
+      real scale, offset
 ! dimension ids
 
       integer time_dim
@@ -3414,7 +3419,7 @@ CONTAINS
       character*80 outfile
 
       integer type
-      double precision, dimension(NVAR_total) :: scale_factor, add_offset
+      real, dimension(NVAR_total) :: scale_factor, add_offset
       integer :: start(3), count(3)
 ! variable id
       integer  Times_id
@@ -3524,21 +3529,23 @@ CONTAINS
 
             if(nvar.lt.6)then
 
-               scale_factor(nvar) = dble(bound(1,nvar)-bound(2,nvar))/(2.d+0**16-1.d+0)
-               iret =nf90_put_att(ncid, VAR_id(nvar),'scale_factor',scale_factor(nvar))
+               scale = (bound(1,nvar)-bound(2,nvar))/(2.d+0**16-1.d+0)
+               scale_factor(nvar) = scale
+               iret = nf90_put_att(ncid, VAR_id(nvar),'scale_factor', scale)
                call handle_err(iret)
 
-               add_offset(nvar) = dble(bound(2,nvar)) + 2.d+0**15. * scale_factor(nvar)
-               iret = nf90_put_att(ncid, VAR_id(nvar),'add_offset',add_offset(nvar))
+               offset = (bound(2,nvar)) + 2.d+0**15. * scale_factor(nvar)
+               add_offset(nvar) = offset
+               iret = nf90_put_att(ncid, VAR_id(nvar),'add_offset', offset)
                call handle_err(iret)
 
             elseif(nvar.eq.6)then
 
-               scale_factor(nvar) = dble(bound(1,nvar)-bound(2,nvar))/(2.d+0**8-1.d+0)
+               scale_factor(nvar) = (bound(1,nvar)-bound(2,nvar))/(2.d+0**8-1.d+0)
                iret =nf90_put_att(ncid,VAR_id(nvar),'scale_factor',scale_factor(nvar))
                call handle_err(iret)
 
-               add_offset(nvar) = dble(bound(2,nvar)) + 2.d+0**7. * scale_factor(nvar)
+               add_offset(nvar) = (bound(2,nvar)) + 2.d+0**7. * scale_factor(nvar)
                iret = nf90_put_att(ncid, VAR_id(nvar),'add_offset',add_offset(nvar))
                call handle_err(iret)
 

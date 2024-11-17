@@ -27,7 +27,7 @@ CONTAINS
       real, dimension(dimerax,dimeray,0:23,11) :: varpack
       integer :: irec
       real :: dx,dy,grx,gry,xswlat,xswlon,xlon,wt1,wt2,wt3,wt4
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3),startp(3),countp(3)
@@ -354,7 +354,7 @@ CONTAINS
       integer*2, allocatable, dimension(:,:,:) :: varread
       real, dimension(dimerax,dimeray,0:23,11) :: varpack
       integer :: irec
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
       real :: dx,dy,grx,gry,xswlat,xswlon,xlon,wt1,wt2,wt3,wt4
 
       integer :: ncid,varid,statusnc
@@ -422,7 +422,7 @@ CONTAINS
       real, dimension(dimerax,dimeray) :: varpack,vartemp,netrad
       integer :: irec
       real :: dx,dy,grx,gry,xswlat,xswlon
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3)
@@ -579,7 +579,7 @@ CONTAINS
       integer*2, allocatable, dimension(:,:,:) :: varread
       integer :: irec
       real :: dx,dy,grx,gry,xswlat,xswlon
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3)
@@ -722,7 +722,7 @@ CONTAINS
       real, dimension(dimerax,dimeray,0:23,11) :: smoipack
       integer :: irec
       real :: dx,dy,grx,gry,xswlat,xswlon,xlon,wt1,wt2,wt3,wt4
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3)
@@ -794,7 +794,7 @@ CONTAINS
       integer*2, dimension(xeraread,yeraread,0:23) :: varread
       character (len = *) :: varname
       integer :: ncid,varid,statusnc
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
       integer :: start(3),count(3)
 
       statusnc = nf90_inq_varid(ncid,varname(1:len_trim(varname)),varid)
@@ -826,7 +826,7 @@ CONTAINS
       real, dimension(xdim,ydim) :: topoera
 
       real :: dx,dy,grx,gry,xswlat,xswlon,xlon
-      double precision :: scale_factor,add_offset
+      real :: scale_factor,add_offset
 
       integer :: ncid,varid,statusnc
 !integer :: start(3),count(3)
@@ -1069,7 +1069,7 @@ CONTAINS
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3)
-      double precision :: scalefactor,addoffset
+      real :: scalefactor,addoffset
 
       if(pid.eq.0)then
 
@@ -1146,7 +1146,7 @@ CONTAINS
 
       integer :: ncid,varid,statusnc
       integer :: start(3),count(3)
-      double precision :: scalefactor,addoffset
+      real :: scalefactor,addoffset
       character (len = *) :: filelai
 
       if(pid.eq.0)then

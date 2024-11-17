@@ -91,4 +91,7 @@ link_directories(
   "/opt/netcdf_v4.9.2_openmpi/zlib/lib"
 )
 
+include_directories(
+  "/usr/lib/x86_64-linux-gnu/openmpi/include"
+)
 add_compile_options(-fallow-argument-mismatch -fdefault-real-8 -ffree-line-length-none)

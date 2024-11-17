@@ -14,8 +14,8 @@ set(SRC_FILES
   "./src/module_wtable.f90"
   "./src/module_nrtype.f90"
   "./src/module_initial.f90"
-  # "./src/module_io.f90"
-  # "./src/module_forcings.f90"
+  "./src/module_io.f90"
+  "./src/module_forcings.f90"
 )
 # message(STATUS "SRC_FILES: ${SRC_FILES}")
 
@@ -33,4 +33,4 @@ include_directories(
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 
 # # add_executable(${PROJECT_NAME} ${SRC_FILES})
-# target_link_libraries(${PROJECT_NAME} PRIVATE mksrfdata colm_share netcdff z)
+target_link_libraries(${PROJECT_NAME} PRIVATE netcdff)
