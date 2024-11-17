@@ -30,13 +30,13 @@ MODULE module_rootdepth
 
 CONTAINS
 
-   include "RootDepth/tridag.f90"
-   include "RootDepth/update_shallow_wtd.f90"
-   include "RootDepth/update_wtb_qsat.f90"
-   include "RootDepth/extraction.f90"
-   include "RootDepth/potevap.f90"
-   include "RootDepth/soilfluxes.f90"
-   include "RootDepth/interception.f90"
+   include "tridag.f90"
+   include "update_shallow_wtd.f90"
+   include "update_wtb_qsat.f90"
+   include "extraction.f90"
+   include "potevap.f90"
+   include "soilfluxes.f90"
+   include "interception.f90"
 
 
    SUBROUTINE ROOTDEPTH(freedrain,imax,js,je,nzg,slz,dz,deltat,landmask,veg,hveg,soiltxt,wind,temp,qair,press,netrad,rshort &

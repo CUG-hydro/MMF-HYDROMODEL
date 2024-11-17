@@ -10,7 +10,7 @@ add_compile_options(-fPIC)
 set(SRC_FILES 
   "./src/module_parallel.f90"
   "./src/interp_lib.f90"
-  "./src/module_rootdepth.f90"
+  "./src/RootDepth/module_rootdepth.f90"
   "./src/Groundwater/module_wtable.f90"
   "./src/module_nrtype.f90"
   "./src/module_initial.f90"
@@ -28,5 +28,5 @@ include_directories( ${NetCDF_F90_INCLUDEDIR} )
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE netcdff)
 
-add_executable(mmf.exe "main.f90")
+add_executable(mmf.exe "src/main.f90")
 target_link_libraries(mmf.exe PRIVATE netcdff ${PROJECT_NAME})

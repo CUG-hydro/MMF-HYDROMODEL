@@ -1,4 +1,3 @@
-!**********************************************************************************************
 SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,smoi,wtd,rech,fdepth)
 
    integer :: nzg,freedrain,nsoil,nsoil1,k,iwtd,kwtd,i,j,flag
@@ -22,7 +21,6 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
    iwtd=k
 
 !if(i.eq.25.and.j.eq.30)write(6,*)'mirar',iwtd,wtd,slz(iwtd),(wtd-slz(iwtd))*1.e3
-
    kwtd=iwtd-1
    if(kwtd.gt.0)then    !wtd in the resolved layers
       wtdold=wtd

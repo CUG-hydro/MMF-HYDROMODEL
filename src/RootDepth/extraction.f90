@@ -1,4 +1,3 @@
-!     ******************************************************************
 subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
    ,delta,gamma,lambda,lai,ra_a,ra_c,rs_c_factor,R_a,R_s,petfactor_s,petfactor_c,pet_s &
    , pet ,watdef,dsmoi,dsmoideep &

@@ -15,7 +15,7 @@ subroutine flooding(imax,js,je,deltat,fd,bfd,topo,area,riverwidth,riverlength,ri
 
    DO n=1,ntsplit
 !communicate flood water height to neighboring cells
-      if(numtasks.gt.1)then
+      if(numtasks .gt. 1)then
          call sendborders(imax,js,je,floodheight,reqsu,reqsd,reqru,reqrd)
       endif
 

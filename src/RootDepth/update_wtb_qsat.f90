@@ -1,4 +1,3 @@
-!     ******************************************************************
 subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,smoiwtd,qlatflux,fdepth)
    implicit none
    integer :: nzg,iwtd,kwtd,nsoil,nsoil1,k,k1
