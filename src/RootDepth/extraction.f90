@@ -30,11 +30,8 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
    dz3=0.
 
 !take water from layers
-
 !    transpwater = pet * 1.e-3
-
 !calculate where the water table is
-
    do k=1,nzg
       if(wtd.lt.slz(k))exit
    enddo
@@ -52,13 +49,11 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
 
 
    do k=max(kwtd,kroot,1),nzg
-
 !if(i.eq.50.and.j.eq.66)write(6,*)'mirar',k,inactivedays(k),inactivedays(k+1),wtd
 
 !check if this layer has roots or can have roots growing from the layer above
 !         if(inactivedays(k).gt.maxinactivedays.and.inactivedays(k+1).gt.maxinactivedays)cycle
       if(inactivedays(k).le.maxinactivedays)rootmask(k)=1
-
 
       vctr4(k) =  0.5 * (slz(k) + slz(k+1))
 
@@ -69,7 +64,6 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
       endif
 
 !calculte the easiness function for extraction for each layer
-
 !      if(abs(slmsts(nsoil)-smoi(k)).lt.1.e-6.and.k.ne.nzg)then
 !           easy(k)=0.
 !      if(smoi(k).le.slwilt(nsoil))then
@@ -88,29 +82,24 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
       endif
 
       easy(k)= max(-( potleaf - pot )*soilfactor / ( hveg-vctr4(k) ) , 0.)
-
 !      endif
-
    enddo
 
    dsmoi = 0.
    dsmoideep = 0.
    watdef = 0.
-
 !eliminate small root activity
 !       where(easy.lt.0.01)easy=0.
 !       if(easydeep.lt.0.01)easydeep=0.
 
 !to grow roots anew, the layer has to be easiest to get water from than the
 !current active layers with roots
-
    maxeasy =  maxval(easy,rootmask==1)
 
 !eliminate small root activity
    where(easy.lt.0.001*maxeasy)easy=0.
 
 !if(i.eq.50.and.j.eq.66)write(6,*)'mirar 2',maxeasy,easy
-
    do k=max(kroot,1),nzg
       if(inactivedays(k).gt.maxinactivedays.and.easy(k).lt.maxeasy)easy(k)=0.
    enddo
@@ -171,7 +160,6 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
 
       rootsmoi = rootsmoi + max(rootactivity(k)*(smoi(k)-smoimin),0.)
       rootfc = rootfc + max(rootactivity(k)*(smoifc-smoimin),0.)
-
    enddo
 
    if(rootsmoi.le.0)then
@@ -238,7 +226,6 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
    enddo
 
    dsmoi=max(dsmoi,0.)
-
    if(abs(watdef-transpwater).gt.1.e9)write(6,*)'algo no esta bien',i,j,transpwater*1.e3,watdef*1.e3
 
 !now total rootactiviy is dsmoi/totwater normalized by soil layer depth, return dsmoi (total water taken from each layer) to do calculation later and update soil moisture

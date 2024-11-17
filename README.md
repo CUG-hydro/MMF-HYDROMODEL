@@ -14,3 +14,6 @@ filehveg   = 'hveg_sam.nc'
 filesmoieq = 'smoieq_SA_new.nc'
 filerivers = 'RIVERPARAMETERS/riverparameters_definitive_yama.dat'
 ```
+
+## Variables 
+- `vctr4`: 

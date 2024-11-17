@@ -70,7 +70,6 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
                ( smoisat-smoieq(kwtd) ), slz(iwtd))
             rech=(wtdold-wtd) * (smoisat-smoieq(kwtd))
 !if(i.eq.300.and.j.eq.200)write(6,*)'mirar 3',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd),smoi(iwtd),smoieq(iwtd)
-
          endif
 
       else    !wtd has gone down to the layer below
@@ -102,11 +101,8 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
                (smoisat-smoieq(kwtd))
 !if(i.eq.300.and.j.eq.200)write(6,*)'mirar 5',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd)
          endif
-
       endif
-
    endif
-
    if(wtd.lt.slz(1))write(6,*)'problem with wtd',wtd,i,j
 
 end subroutine update_shallow_wtd
