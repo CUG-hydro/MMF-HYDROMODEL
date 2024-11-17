@@ -285,7 +285,7 @@ program driver
 
    if(pid.eq.0)write(6,*)'now to initialize soil depth and initial data'
 
-   call INITIALIZESOILDEPTH(nzg,slz,dz)
+   call init_soil_depth(nzg,slz,dz)
 
    if(pid.eq.0)write(6,*)'soil layers',(slz(k),k=1,nzg+1),(dz(k),k=1,nzg)
 

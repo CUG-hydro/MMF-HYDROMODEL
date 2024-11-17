@@ -4,7 +4,6 @@ MODULE module_wtable
    use module_rootdepth
 
    implicit none
-
    real, parameter :: pi4=3.1415927 * 4.
 
 CONTAINS
@@ -24,9 +23,7 @@ CONTAINS
       integer, dimension(imax,js:je) :: landmask
       integer :: reqsu,reqsd,reqru,reqrd
 
-
       if(numtasks.gt.1)call SENDBORDERS(imax,js,je,wtd,reqsu,reqsd,reqru,reqrd)
-
 
 !Calculate lateral flow
       qlat=0.
@@ -37,7 +34,6 @@ CONTAINS
             klat(i,j)=slcons(nsoil)*klatfactor(nsoil)
          enddo
       enddo
-
 
 !make sure that the borders are received before calculating lateral flow
       if(pid.eq.1)then
@@ -75,9 +71,7 @@ CONTAINS
 !and now flux (=recharge)
                   deeprech(i,j) = deltat * kfup &
                      * ( (slpots(nsoil)-vt3dbdw)/(slz(1)-wtd(i,j))  - 1. )
-
 !now update smoiwtd
-
                   newwgp=smoiwtd(i,j) + (deeprech(i,j) - bottomflux(i,j)) / (slz(1)-wtd(i,j))
                   if(newwgp.lt.soilcp(nsoil))then
                      deeprech(i,j)=deeprech(i,j)+(soilcp(nsoil)-newwgp)*(slz(1)-wtd(i,j))
@@ -98,11 +92,7 @@ CONTAINS
          ENDDO
       ENDDO
 
-
       bottomflux=0.
-
-
-
 !before changing wtd make sure that the borders have been received
 
       if(pid.eq.1)then
@@ -115,9 +105,7 @@ CONTAINS
       endif
 
 !Now update water table and soil moisture
-
 !write(6,*)'now to updatewtd'
-
       DO j=js+1,je-1
          DO i=1,imax
 
@@ -139,8 +127,6 @@ CONTAINS
 
          ENDDO
       ENDDO
-
-
 
    end subroutine wtable
 
@@ -290,8 +276,6 @@ CONTAINS
       real,dimension(imax,js:je)::fdepth,wtd,qlat,topo,area,kcell,klat,head
 
       fangle=sqrt(tan(pi4/32.))/(2.*sqrt(2.))
-
-
 !gmmlateral flow calculation
 !WHERE(fdepth.lt.1.e-6)
 !  kcell=0.
@@ -300,8 +284,6 @@ CONTAINS
 !ELSEWHERE
 !   kcell=klat*(wtd+1.5+fdepth)
 !END WHERE
-
-
       do j=max(js,1),min(je,jmax)
          do i=1,imax
             if(fdepth(i,j).lt.1.e-6)then
@@ -356,7 +338,6 @@ CONTAINS
          enddo
       enddo
 
-
    end subroutine lateralflow
 
 !     ******************************************************************
@@ -369,8 +350,6 @@ CONTAINS
       integer, dimension(imax,js:je):: landmask
       real,dimension(imax,js:je)::fdepth,wtd,qlat,topo,area,kcell,klat,head,xlat
 
-
-
 !gmmlateral flow calculation
 !WHERE(fdepth.lt.1.e-6)
 !  kcell=0.
@@ -379,8 +358,6 @@ CONTAINS
 !ELSEWHERE
 !   kcell=klat*(wtd+1.5+fdepth)
 !END WHERE
-
-
       do j=max(js,1),min(je,jmax)
          do i=1,imax
             if(fdepth(i,j).lt.1.e-6)then
@@ -396,7 +373,6 @@ CONTAINS
       enddo
 
 !head=topo+wtd
-
 
       do j=js+1,je-1
          do i=2,imax-1
@@ -431,7 +407,6 @@ CONTAINS
          enddo
       enddo
 
-
    end subroutine lateralflow4
 
 !     ******************************************************************
@@ -453,10 +428,7 @@ CONTAINS
          soiltxt=soiltextures(2)
       endwhere
 
-
-
       iwtd=1
-
 !case 1: totwater > 0 (water table going up):
       IF(totwater.gt.0.)then
 
@@ -601,7 +573,6 @@ CONTAINS
 !case 2: totwater < 0 (water table going down):
       ELSEIF(totwater.lt.0.)then
 
-
          if(wtd.ge.slz(1))then !wtd in the resolved layers
 
             do k=2,nzg
@@ -656,19 +627,14 @@ CONTAINS
                      ( slmsts(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
 
                else
-
                   wtd=slz(1)-dz(1)
                   smoiwtd = smoiwtd + totwater / dz(1)
 !and now even further down
                   dzup=(smoieqwtd-smoiwtd)*dz(1)/(slmsts(nsoil)-smoieqwtd)
                   wtd=wtd-dzup
                   smoiwtd=smoieqwtd
-
                endif
-
             endif
-
-
 
          elseif(wtd.ge.slz(1)-dz(1))then
 
@@ -686,16 +652,13 @@ CONTAINS
                wtd = max( ( smoiwtd*dz(1) &
                   - smoieqwtd*slz(1) + slmsts(nsoil)*(slz(1)-dz(1)) ) / &
                   ( slmsts(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
-
             else
-
                wtd=slz(1)-dz(1)
                smoiwtd = smoiwtd + totwater / dz(1)
 !and now even further down
                dzup=(smoieqwtd-smoiwtd)*dz(1)/(slmsts(nsoil)-smoieqwtd)
                wtd=wtd-dzup
                smoiwtd=smoieqwtd
-
             endif
 
          else
@@ -709,13 +672,9 @@ CONTAINS
             wtd = wtdold + totwater/syielddw
 !update wtdwgp
             smoiwtd = (smoiwtd*(slz(1)-wtdold)+wgpmid*(wtdold-wtd) ) / (slz(1)-wtd)
-
          endif
-
          qspring=0.
-
       ENDIF
-
 
    end subroutine updatewtd
 !     ******************************************************************
@@ -777,7 +736,6 @@ CONTAINS
          enddo
       enddo
 
-
    end subroutine gw2river
 
 !     ******************************************************************
@@ -798,26 +756,19 @@ CONTAINS
          ,dtopo,dcommon,qmax,vmax,waterelevij,waterelevi1j1,waterelevi2j2,slopefor,slopeback
       integer :: reqsu,reqsd,reqru,reqrd
 
-
       do j=js+1,je-1
          do i=2,imax-1
             IF(fd(i,j).ne.0) then
-
                qext(i,j)= ( qrf(i,j) + qs(i,j) +  delsfcwat(i,j) ) / deltat  * area(i,j)
 !          riverarea(i,j) = width(i,j)*length(i,j)
 !          floodarea(i,j) = max( area(i,j)-riverarea(i,j) , 0. )
 !          riverchannel(i,j) = maxdepth(i,j)*riverarea(i,j)
 !if(i.eq.54.and.j.eq.49)write(6,*)'mirar rivers 0',qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j)
-
 !if(i.eq.543.and.j.eq.172)write(6,*)'mirar rivers',width(i,j),riverchannel(i,j)
-
             ENDIF
          enddo
       enddo
-
-
 !dtlr = deltat/float(ntsplit)
-
 !do n=1,ntsplit
 
       if(numtasks.gt.1)call sendborders(imax,js,je,qnew,reqsu,reqsd,reqru,reqrd)
@@ -891,9 +842,7 @@ CONTAINS
 
                if(i.eq.4475.and.j.eq.4718)dsnew = dsnew + q(4475,4717)/6.
                if(i.eq.4474.and.j.eq.4717)dsnew = dsnew - q(4475,4717)/6.
-
 !new river store
-
                snew = depth(i,j)*riverarea(i,j) + floodheight(i,j)*floodarea(i,j) + ( dsnew+qext(i,j) ) * dtlr
 
 !if(i.eq.1360.and.j.eq.1065)write(6,*)'mirar
@@ -910,7 +859,6 @@ CONTAINS
 !if(i.eq.1360.and.j.eq.1065)write(6,*)'mirar rivers
 !2',floodheight(i,j),depth(i,j)
                else
-
                   floodheight(i,j) = 0.
                   if(riverarea(i,j).gt.0.)then
                      depth(i,j) = snew/riverarea(i,j)
@@ -920,7 +868,6 @@ CONTAINS
 
 !if(i.eq.1360.and.j.eq.1065)write(6,*)'mirar rivers
 !2',floodheight(i,j),depth(i,j)
-
                endif
                if(depth(i,j).ne.depth(i,j))write(6,*)'problem with depth',i,j,qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j)
 !if(i.eq.3417.and.j.eq.6320)write(6,*)'mirar rivers 1',qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j),depth(i,j)
@@ -929,7 +876,6 @@ CONTAINS
             ENDIF
          enddo
       enddo
-
 
 !before changing qnew make sure that the borders have been received
       if(pid.eq.1)then
@@ -981,23 +927,17 @@ CONTAINS
                      else
                         slopeinst = slopefor
                      endif
-
 !                  slopeinst=0.5*(slopeinst+slope(i,j))
                      slopeinst=0.25*slopeinst+0.75*slope(i,j)
 !                  slopeinst=0.1*slopeinst+0.9*slope(i,j)
                      if(slopeinst.lt.0.)slopeinst=slope(i,j)
-
 !                  dtopo=max(waterelevij-waterelevi1j1,0.)
 !                  qmax = dtopo*riverarea(i,j)/dtlr
 !                  vmax = qmax / (depth(i,j)*width(i,j))
-
                      speed = ( aa**(2./3.) )*sqrt(slopeinst)/0.03
-
 !                  vmax=max(vmax,( aa**(2./3.) )*sqrt(slope(i,j))/0.03)
 !                  speed=max(min(speed,vmax),0.01)
                      speed=max(min(speed,length(i,j)/dtlr),0.01)
-
-
                   else
                      slopeinst=slope(i,j)
                   endif
@@ -1006,17 +946,11 @@ CONTAINS
                else
                   speed=0.
                endif
-
 !now calculate the new q
                qnew(i,j) = speed * depth(i,j) * flowwidth!width(i,j)
-
             else
-
                qnew(i,j)=0.
-
             endif
-
-
          enddo
       enddo
 
@@ -1031,11 +965,7 @@ CONTAINS
          call  MPI_wait(reqsu,status,ierr)
          call  MPI_wait(reqsd,status,ierr)
       endif
-
-
-
 !enddo
-
 
    end subroutine rivers_kw_flood
 
@@ -1152,9 +1082,7 @@ CONTAINS
 
                if(i.eq.4475.and.j.eq.4718)dsnew = dsnew + q(4475,4717)/6.
                if(i.eq.4474.and.j.eq.4717)dsnew = dsnew - q(4475,4717)/6.
-
 !new river store
-
                snew = depth(i,j)*riverarea(i,j) + floodheight(i,j)*floodarea(i,j) + ( dsnew+qext(i,j) ) * dtlr
 
 !if(i.eq.1360.and.j.eq.1065)write(6,*)'mirar
@@ -1178,7 +1106,6 @@ CONTAINS
                   else
                      depth(i,j)=0.
                   endif
-
 !if(i.eq.1360.and.j.eq.1065)write(6,*)'mirar rivers
 !2',floodheight(i,j),depth(i,j)
 
@@ -1186,11 +1113,9 @@ CONTAINS
                if(depth(i,j).ne.depth(i,j))write(6,*)'problem with depth',i,j,qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j)
 !if(i.eq.3417.and.j.eq.6320)write(6,*)'mirar rivers 1',qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j),depth(i,j)
 !if(i.eq.158.and.j.eq.441)write(6,*)'mirar rivers 2',qrf(i,j),qs(i,j),delsfcwat(i,j),qnew(i,j),floodheight(i,j),depth(i,j)
-
             ENDIF
          enddo
       enddo
-
 
 !before changing qnew make sure that the borders have been received
       if(pid.eq.1)then
@@ -1213,7 +1138,6 @@ CONTAINS
          call  MPI_wait(reqru,status,ierr)
          call  MPI_wait(reqrd,status,ierr)
       endif
-
 
       do j=js+1,je-1
          do i=2,imax-1
@@ -1241,7 +1165,6 @@ CONTAINS
                      slopeinst = slopefor
                   endif
 
-
                   qnew(i,j) = ( q(i,j) - gg * depth(i,j) * dtlr * slopeinst ) / &
                      ( 1. + gg * dtlr * 0.03**2. * q(i,j) / ( aa**(4./3.) * depth(i,j)) )
 
@@ -1250,9 +1173,7 @@ CONTAINS
                   else
                      flowwidth=width(i,j)
                   endif
-
                   qnew(i,j) = qnew(i,j) * flowwidth
-
 
                else
                   aa=depth(i,j)*width(i,j)/(2.*depth(i,j)+width(i,j))
@@ -1261,16 +1182,10 @@ CONTAINS
 
 !now calculate the new q
                   qnew(i,j) = speed * depth(i,j) * width(i,j)
-
                endif
-
             else
-
                qnew(i,j)=0.
-
             endif
-
-
          enddo
       enddo
 
@@ -1286,15 +1201,10 @@ CONTAINS
          call  MPI_wait(reqsd,status,ierr)
       endif
 
-
-
 !enddo
-
-
    end subroutine rivers_dw_flood
 
 !******************************************************************************************
-
 
    subroutine FLOODING(imax,js,je,deltat,fd,bfd,topo,area,riverwidth,riverlength,riverdepth,floodheight,delsfcwat)
 !use module_parallel
@@ -1331,7 +1241,6 @@ CONTAINS
 
          do j=js+1,je-1
             do i=2,imax-1
-
 !if(i.eq.3417.and.j.eq.6320)write(6,*)'mirar en flood',delsfcwat(i,j),floodheight(i,j)
 
                if(fd(i,j).eq.0)cycle
@@ -1378,9 +1287,7 @@ CONTAINS
                   endif
 
 !if(ilow.eq.540.and.jlow.eq.641)write(6,*)'mirar flood',floodheight(i,j),dhmax,dij,dflood(i,j),i,j,floodheight(ilow,jlow),dflood(ilow,jlow),floodheight(i,j)+topo(i,j),floodheight(ilow,jlow)+topo(ilow,jlow)
-
                endif
-
             enddo
          enddo
 
@@ -1417,8 +1324,6 @@ CONTAINS
             call  MPI_wait(reqsd,status,ierr)
          endif
 
-
-
 !update floodheight and riverdepth
          delsfcwat=delsfcwat+dflood
 !     floodheight=floodheight+delsfcwat
@@ -1434,7 +1339,6 @@ CONTAINS
             call  MPI_wait(reqsu2,status,ierr)
             call  MPI_wait(reqsd2,status,ierr)
          endif
-
       ENDDO
 
    end subroutine flooding
@@ -1497,7 +1401,6 @@ CONTAINS
          call  MPI_wait(reqsd2,status,ierr)
       endif
 
-
    end subroutine moveqrf
 !******************************************************************************************
    subroutine FLOWDIR(imax,js,je,fd,ii,jj,i,j)
@@ -1528,11 +1431,7 @@ CONTAINS
          i=0
 !      write(6,*)'i dont know what to do j',fd(ii,jj),ii,jj
       end select
-
    end subroutine flowdir
 
 !******************************************************************************************
-
-
-
 END MODULE MODULE_WTABLE

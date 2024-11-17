@@ -170,7 +170,7 @@ CONTAINS
 !now adjust wtd
 
 !if(i.eq.46.and.j.eq.61)write(6,*)'mirar antes shallowwtd',wtd(i,j)
-               call updateshallowwtd(i,j,nzg,freedrain,slz,dz,soiltxt(1,i,j),smoieq(1,i,j),smoiwtd(i,j),smoi(1,i,j),wtd(i,j),rechstep,fdepth(i,j))
+               call update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt(1,i,j),smoieq(1,i,j),smoiwtd(i,j),smoi(1,i,j),wtd(i,j),rechstep,fdepth(i,j))
 !if(i.eq.46.and.j.eq.61)write(6,*)'mirar despues shallowwtd',wtd(i,j)
 
                rech(i,j) = rech(i,j) + rechstep*1.e3
@@ -234,11 +234,9 @@ CONTAINS
          ENDDO
       ENDDO
 
-
    end subroutine rootdepth
 
 !     ******************************************************************
-
    subroutine INTERCEPTION(minpprate,precip,lai,intercepstore,ppdrip,pet_i,et_i)
 
       real :: minpprate,precip,lai,intercepstore,ppdrip,pet_i,et_i
@@ -265,11 +263,9 @@ CONTAINS
          ppdrip = 0.
       endif
 
-
    end subroutine interception
 
 !     ******************************************************************
-
    subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
       ,delta,gamma,lambda,lai,ra_a,ra_c,rs_c_factor,R_a,R_s,petfactor_s,petfactor_c,pet_s &
       , pet ,watdef,dsmoi,dsmoideep &
@@ -365,8 +361,6 @@ CONTAINS
 
       enddo
 
-
-
       dsmoi = 0.
       dsmoideep = 0.
       watdef = 0.
@@ -383,13 +377,11 @@ CONTAINS
 !eliminate small root activity
       where(easy.lt.0.001*maxeasy)easy=0.
 
-
 !if(i.eq.50.and.j.eq.66)write(6,*)'mirar 2',maxeasy,easy
 
       do k=max(kroot,1),nzg
          if(inactivedays(k).gt.maxinactivedays.and.easy(k).lt.maxeasy)easy(k)=0.
       enddo
-
 
       toteasy=sum(easy*dz2)
       if(toteasy.eq.0.)then
@@ -423,8 +415,6 @@ CONTAINS
       inactivedays=min(inactivedays,maxinactivedays+1)
 
 !if(i.eq.50.and.j.eq.66)write(6,*)'mirar 5',inactivedays
-
-
 !         if(i.eq.89.and.j.eq.193)write(6,*)(rootactivity(k),k=1,nzg),sum(rootactivity)
 !         if(i.eq.89.and.j.eq.193)write(6,*)(easy(k),k=1,nzg),sum(easy*dz),toteasy
 
@@ -452,7 +442,6 @@ CONTAINS
 
       enddo
 
-
       if(rootsmoi.le.0)then
          fswp=0.
       elseif(rootsmoi/rootfc.le.1)then
@@ -460,7 +449,6 @@ CONTAINS
       else
          fswp=1.
       endif
-
 
       if(fswp.eq.0.)then
          rs_c=5000.
@@ -496,15 +484,12 @@ CONTAINS
 
       transpwater = pet * 1.e-3
 
-
       if(toteasy.eq.0.)then
          watdef = transpwater
          return
       endif
 
-
       do k=max(kwtd,1),nzg
-
 !calculate hyd. conductivity
 !         kf =   slcons(nsoil) * (smoi(k)  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
 !         maxwat = min( maxwat , kf*deltat )
@@ -518,12 +503,7 @@ CONTAINS
             dsmoi(k) =  maxwat(k)
             watdef = watdef + (extract-maxwat(k))
          endif
-
       enddo
-
-
-
-
 
       dsmoi=max(dsmoi,0.)
 
@@ -532,12 +512,9 @@ CONTAINS
 !now total rootactiviy is dsmoi/totwater normalized by soil layer depth, return dsmoi (total water taken from each layer) to do calculation later and update soil moisture
 
 !       smoi = smoi - dsmoi/dz
-
-
    end subroutine extraction
 
 !     ******************************************************************
-
    subroutine POTEVAP_Priestly_Taylor(i,j,tempk,rad,presshp,pet)
 
       integer :: i,j
@@ -562,7 +539,6 @@ CONTAINS
    end subroutine potevap_priestly_taylor
 
 !     ******************************************************************
-
    subroutine POTEVAP_Penman_Monteith(i,j,tempk,rad,rshort,press,qair,wind,lai,veg,hveg,pet)
       real, parameter :: cp = 1013. , vk=0.41 ,Rd=287.
       integer :: i,j
@@ -610,9 +586,7 @@ CONTAINS
 !      else
 !             zh=2.+hveg
 !      endif
-
       z0h = 0.1*z0m
-
       ra = log( (zm-hdisp)/z0m ) * log( (zh-hdisp)/z0h ) / (vk**2. * wind)
 
 !bulk surface resistance
@@ -626,9 +600,7 @@ CONTAINS
       endif
 
       fvpd = exp(-g_d * vpd)
-
       slai = 0.5 * lai
-
 
       if( slai*frad*fswp*fvpd .eq. 0.) then
          rs = 5000.
@@ -647,7 +619,6 @@ CONTAINS
    end subroutine potevap_penman_monteith
 
 !     ******************************************************************
-
    subroutine POTEVAP_Shutteworth_Wallace(i,j,deltat,tempk,rad,rshort,press,qair,wind,lai,veg,hhveg  &
       ,delta,gamma,lambda,ra_a,ra_c,rs_c,R_a,R_s &
       ,pet_s,pet_c,pet_w,pet_i,floodflag)
@@ -702,7 +673,6 @@ CONTAINS
          ,.001,   .01   & ! 29  Bare ground
          ,.02,    0./     ! 30  Urban and built up
 
-
       z0gr(:) = bioparms(1,:)
       wmax(:) = bioparms(2,:)
 
@@ -728,28 +698,22 @@ CONTAINS
          pet_w = max( deltat * pet_w / lambda, 0.)
 
          pet_s = 0.
-
          pet_c = 0.
-
          pet_i = 0.
 
       ELSE
-
          pet_w = 0.
 
 !!Radiation
 
 !net radiation on the ground
-
          Rn_s = rad * exp(-0.5*lai)
 
 !!!Resistances
 !ra_a aerodynamic resistance from canopy to reference height
-
          za = hveg + 2. !ref. height
 
 !roughness for a closed canopy z0c
-
          if(hveg.le.1.)then
             z0c = 0.13 * hveg
          elseif(hveg.gt.1..and.hveg.lt.10.)then
@@ -759,7 +723,6 @@ CONTAINS
          endif
 
 !mean drag coefficient for individual leafs
-
          if(hveg.eq.0.)then
             c_d = 1.4e-3
          else
@@ -767,7 +730,6 @@ CONTAINS
          endif
 
 !zero plane displacement height d0
-
          if(lai.ge.4.)then
             d0 = max( hveg - z0c/0.3 , 0.)
          else
@@ -778,11 +740,8 @@ CONTAINS
 !if(i.eq.29.and.j.eq.19)write(6,*)'mirar lai,hveg,d0',lai,hveg,d0
 
 !reference height
-
 !   za = 10. + d0
-
 !ground roughness length
-
          if(floodflag.eq.0)then
             z0g = z0gr(nint(veg))
          else
@@ -790,19 +749,15 @@ CONTAINS
          endif
 
 !roughness lengtt of canopy z0
-
          z0 = min( 0.3*(hveg-d0) , z0g + 0.3*hveg*(c_d*lai)**0.5 )
-
          z0 = max(z0,z0g)
 
 !friction  velocity ustar
-
 !if(j.gt.8498)write(6,*)'mirar',i,j,wind,d0,z0
 !    ustar = vk * wind / log( (za-d0)/z0 )
          ustar = vk * wind / log( 10./z0 )
 
 !Eddy diffusion coefficient at the top of the canopy
-
          K_h = vk * ustar * (hveg - d0 )
 
 !eddy diff. decay constant for vegetation, n
@@ -817,33 +772,22 @@ CONTAINS
 
 !preferred roughness length Z0
          Z0 = 0.13 * hveg
-
 !preferred zero plane displacement dp
-
          dp = 0.63 * hveg
-
 !and finally
-
          ra_a = log( (za-d0)/(hveg-d0) ) / (vk*ustar) &
             + hveg * ( exp( n * ( 1. - (Z0+dp)/hveg ) ) -1. ) / (n*K_h)
-
 !if(i.eq.29.and.j.eq.19)write(6,*)'mirar hveg,za,z0,ustar,K_h,n,Z0,dp,ra_a',hveg,za,z0,ustar,K_h,n,Z0,dp,log( (za-d0)/(hveg-d0) ),exp( n * ( 1. - (Z0+dp)/hveg ) )
 
 !!ra_s aerodynamic resistance from soil to canopy
-
          ra_s = hveg*exp(n) * ( exp(-n*z0g/hveg) - exp( -n*(Z0+dp) / hveg ) ) / (n*K_h)
 
 !if(i.eq.29.and.j.eq.19)write(6,*)'mirar ra_a,ra_s',ra_a,ra_s
-
 !!Bulk boundary layer resistance of canopy, ra_c
-
 !uc, wind at canopy top
-
          uc = ustar * log( (hveg-d0)/z0 ) / vk
 
-
 !wleaf
-
          select case(nint(veg))
           case(4,5,13,20,21)
             wleaf = wmax(nint(veg)) * (1. - exp(-0.6*lai))
@@ -852,7 +796,6 @@ CONTAINS
          end select
 
 !rb
-
          rb = 100. * (wleaf/uc)**0.5 / ( ( 1. - exp (-n/2.) ) * n )
 
 !
@@ -862,9 +805,7 @@ CONTAINS
             ra_c = 0.
          endif
 
-
 !!Bulk stomatal resistance of canopy rs_c
-
          frad = min(1.,(0.004*rshort+0.05)/(0.81*(1.+0.004*rshort)))
 !this is how it was in the runs for PNAS
          fswp = 1.
@@ -900,7 +841,6 @@ CONTAINS
 !     endif
 
 !!!!!!!!!!!!!!!!
-
          R_a = (delta + gamma) * ra_a
 !      R_c = (delta + gamma) * ra_c + gamma*rs_c in the call
 !      R_s = (delta + gamma) * ra_s + gamma*rs_s in the call
@@ -914,7 +854,6 @@ CONTAINS
 !      endif
 
 !!PET
-
 !pet_c = C_c * ( delta*rad + ( dens*cp*vpd - delta*ra_c*Rn_s ) / (ra_a+ra_c) ) / (delta + gamma*(1.+rs_c/(ra_a+ra_c)) )
 !pet_c = max( deltat * pet_c / lambda , 0.)
          pet_c = ( delta*rad + ( dens*cp*vpd - delta*ra_c*Rn_s ) / (ra_a+ra_c) )
@@ -949,32 +888,25 @@ CONTAINS
 
 !pet = 3.*3600.* ( C_c*pet_c + C_s*pet_s + pet_w ) / lambda
 
-
-
-
-
    end subroutine POTEVAP_Shutteworth_Wallace
 !     ******************************************************************
 
-   subroutine INITIALIZESOILDEPTHCLM(nzg,slz,dz)
+   subroutine init_soil_depth_clm(nzg,slz,dz)
 
       integer :: nzg,k,kk
       real, dimension(nzg+1) :: slz,slz2
       real, dimension(nzg) :: dz,dz2,vctr4
-
 
       do k=1,nzg
          vctr4(k) = 0.025 * (exp( 0.5*(float(k)-0.5) ) -1.)
       enddo
 
 !write(6,*)'soil nodes',(-vctr4(k),k=nzg,1,-1)
-
       do k=2,nzg-1
          dz2(k)=0.5*(vctr4(k+1)-vctr4(k-1))
       enddo
       dz2(1)=0.5*(vctr4(1)+vctr4(2))
       dz2(nzg)=vctr4(nzg)-vctr4(nzg-1)
-
 
       do k=1,nzg
          slz2(k)=0.5*(vctr4(k)+vctr4(k+1))
@@ -989,15 +921,10 @@ CONTAINS
       enddo
 
       slz(nzg+1)=0.
-
-
-
-   end subroutine initializesoildepthclm
+   end subroutine init_soil_depth_clm
 
 !     ******************************************************************
-
-   subroutine INITIALIZESOILDEPTH(nzg,slz,dz)
-
+   subroutine init_soil_depth(nzg,slz,dz)
       integer :: nzg,k,kk
       real, dimension(nzg+1) :: slz,slz2
       real, dimension(nzg) :: dz,vctr4
@@ -1014,7 +941,7 @@ CONTAINS
          slz(k)=slz(k+1)-dz(k)
       enddo
 
-   end subroutine initializesoildepth
+   end subroutine init_soil_depth
 
 
 !******************************************************************************
@@ -1047,7 +974,6 @@ CONTAINS
          vctr6(k) = 1. / vctr5(k)
       enddo
 
-
       kfmid = 0.
       diffmid = 0.
 
@@ -1056,9 +982,7 @@ CONTAINS
       rech = 0.
       runoff = 0.
 
-
       qgw = qlat - qrf
-
 !top boundary condition, infiltration + potential et from soil
 
       vt3di(nzg+1)= (-precip + pet_s ) * 1.e-3 - flood
@@ -1076,14 +1000,9 @@ CONTAINS
 
       k=max(iwtd-1,1)
       qlatflux(k)=qlatflux(k)+qgw
-
 !         do k = 2,nzg
-
       do k=max(iwtd-1,2),nzg
-
-
 !gmmdiffusivity and conductivity at the interlayers
-
          wgpmid=smoi(k)+(smoi(k)-smoi(k-1))*(slz(k)-vctr4(k))*vctr6(k)
 
          if(slz(k).lt.-0.30)then
@@ -1110,41 +1029,29 @@ CONTAINS
          diffmid(k) =-icefac * (hydcon*psisat*slbs(nsoil)/smoisat)  &
             * (wgpmid/smoisat) **(slbs(nsoil)+2.)
 
-
 !write(6,*)k,diffmid(k),kfdw,kfup,ddw,dup,smoi(k),smoi(k-1)
-
       enddo
-
-
 !calculate tridiagonal matrix elements
-
 !       do k=2,nzg-1
       do k=max(iwtd-2,2),nzg
-
          aa(k) = diffmid(k)*vctr6(k)
          cc(k) = diffmid(k+1)*vctr6(k+1)
          bb(k) = -( aa(k) + cc(k) + dz(k)/dtll )
          rr(k) = -smoi(k)*dz(k)/dtll -kfmid(k+1) +kfmid(k) + transp(k)/dtll
          if(k.eq.iwtd-1)rr(k) = rr(k) - qgw/dtll
-
       enddo
-
-
 !boundary conditions
 
 !top boundary
-
       aa(nzg) = diffmid(nzg)*vctr6(nzg)
       bb(nzg) = -aa(nzg) -dz(nzg)/dtll
       rr(nzg) = vt3di(nzg+1)/dtll -smoi(nzg)*dz(nzg)/dtll +kfmid(nzg) + transp(nzg)/dtll
       if(iwtd-1.eq.nzg)rr(nzg) = rr(nzg) - qgw/dtll
 
 !now bottom boundary condition
-
       IF(freedrain.ne.1)then
 
          if(iwtd.le.3)then
-
             aa(1) = 0.
             cc(1) = diffmid(2)*vctr6(2)
             bb(1) = -( aa(1) + cc(1) + dz(1)/dtll )
@@ -1152,17 +1059,13 @@ CONTAINS
             if(iwtd.le.2)rr(1) = rr(1) - qgw/dtll
 
          else
-
             do k=1,max(iwtd-3,1)
                aa(k)=0.
                cc(k)=0.
                bb(k)=1.
                rr(k)=smoi(k)
             enddo
-
          endif
-
-
       ELSE
 
 !gmmgravitational drainage at the bottom
@@ -1178,20 +1081,14 @@ CONTAINS
          cc(1) = diffmid(2)*vctr6(2)
          bb(1) = -( cc(1) + dz(1)/dtll )
          rr(1) = -smoi(1)*dz(1)/dtll -kfmid(2) + kfmid(1) + transp(1)/dtll
-
       ENDIF
-
 !if(i.eq.25.and.j.eq.30)write(6,*)'mirar wtd',wtd,soilcp(nsoil),slmsts(nsoil),nsoil
 !if(i.eq.25.and.j.eq.30)write(6,*)'smoi antes',(smoi(k),k=1,nzg)
 
-
 !solve tridiagonal system and update smoi
-
       call tridag(aa,bb,cc,rr,smoi,nzg)
 
-
 !calculate the fluxes
-
       do k=2,nzg
          vt3di(k)=(-aa(k)*(smoi(k)-smoi(k-1))-kfmid(k))*dtll
       enddo
@@ -1337,13 +1234,10 @@ CONTAINS
 
       ENDIF
 
-
-
-
    end subroutine soilfluxes
 
 !**********************************************************************************************
-   SUBROUTINE UPDATESHALLOWWTD(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,smoi,wtd,rech,fdepth)
+   SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,smoi,wtd,rech,fdepth)
 
       integer :: nzg,freedrain,nsoil,nsoil1,k,iwtd,kwtd,i,j,flag
       real, dimension(nzg+1) :: slz
@@ -1358,7 +1252,6 @@ CONTAINS
       do k=1,nzg
          vctr4(k) = 0.5 * (slz(k) + slz(k+1))
       enddo
-
 
       do k=1,nzg
 !     if(wtd+1.e-6.lt.slz(k))exit
@@ -1456,11 +1349,11 @@ CONTAINS
 
       if(wtd.lt.slz(1))write(6,*)'problem with wtd',wtd,i,j
 
-   end subroutine updateshallowwtd
+   end subroutine update_shallow_wtd
 
 !     ******************************************************************
 
-   subroutine UPDATEWTDQLAT(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,smoiwtd,qlatflux,fdepth)
+   subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,smoiwtd,qlatflux,fdepth)
       implicit none
       integer :: nzg,iwtd,kwtd,nsoil,nsoil1,k,k1
       real , dimension(nzg+1) :: slz
@@ -1489,8 +1382,6 @@ CONTAINS
 
 !case 1: totwater > 0 (water table going up):
       IF(totwater.gt.0.)then
-
-
 
          do k=2,nzg
             if(wtd.lt.slz(k))exit
@@ -1536,19 +1427,14 @@ CONTAINS
                   qlatflux(k) = qlatflux(k) + maxwatup
                   totwater=totwater-maxwatup
                endif
-
             enddo
-
          endif
-
 
 !water springing at the surface
          qspring=totwater
 
 !case 2: totwater < 0 (water table going down):
       ELSEIF(totwater.lt.0.)then
-
-
 
          do k=2,nzg
             if(wtd.lt.slz(k))exit
@@ -1598,18 +1484,10 @@ CONTAINS
             wtd = max( ( smoi(1)*dz(1) &
                - smoieq(1)*slz(2) + smoisat*slz(1) ) / &
                ( smoisat-smoieq(1) ) , slz(1) )
-
-
          endif
-
-
-
          qspring=0.
-
       ENDIF
-
-
-   end subroutine updatewtdqlat
+   end subroutine update_wtb_qlat
 
 !**********************************************************************************************
    SUBROUTINE tridag(a,b,c,r,u,n)
@@ -1641,7 +1519,6 @@ CONTAINS
       integer :: nsoil,k,irec,nzg
       real, dimension(nzg,nstyp) :: fieldcp
 
-
 !define soilcp, the wilting point in terms of matric potential
       do nsoil=1,nstyp
          slwilt(nsoil)= slmsts(nsoil) * ( slpots(nsoil)/potwilt )**(1./slbs(nsoil))
@@ -1650,13 +1527,11 @@ CONTAINS
    end subroutine init_soil_param
 
 !**********************************************************************************************
-
    FUNCTION khyd(smoi,nsoil)
       integer :: nsoil
       real :: khyd,smoi
 
       khyd = slcons(nsoil) * (smoi  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
-
    END FUNCTION khyd
 
 END MODULE MODULE_ROOTDEPTH
