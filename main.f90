@@ -817,12 +817,9 @@ program driver
          transptop(:,:,1:daypast-1)=0.
          infilk(:,:,1:daypast-1)=nzg+1
 
-
-
       endif
 !        endif
 !       endif
-
 
 !history
 
@@ -869,15 +866,11 @@ program driver
          daypast=1  !bring back counter to 1
 
       endif
-
-
 !now LAI from MODIS
 !       if(mod( julday(month,day,year) -1 , 4 ) .eq. 0 .and.hour.eq.0)then
 !                 if(pid.eq.0)write(6,*)'time to read LAI',julday(month,day,year)
 !                 call READLAI(n2,js,je,lats,lons,year,month,day,lai)
 !       endif
-
-
       if(hour.eq.0)then
 
          jday = julday(month,day,year)
@@ -913,11 +906,7 @@ program driver
          lai = lai_past + (lai_fut - lai_past) * tfact
 
       endif
-
-
    ENDDO
 
-
    call MPI_FINALIZE(ierr)
-
 end

@@ -20,17 +20,13 @@ set(SRC_FILES
 # message(STATUS "SRC_FILES: ${SRC_FILES}")
 
 find_package(NetCDF REQUIRED)
-include_directories(
-  ${NetCDF_F90_INCLUDEDIR} 
-  # ${CMAKE_BINARY_DIR}/share
-  # ${CMAKE_BINARY_DIR}/mksrfdata
-)
+include_directories( ${NetCDF_F90_INCLUDEDIR} )
 
-# # add_subdirectory(../share ${CMAKE_BINARY_DIR}/share)
 # add_subdirectory(../mksrfdata ${CMAKE_BINARY_DIR}/mksrfdata)
 
-# # add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
+# add_library(${PROJECT_NAME} STATIC ${SRC_FILES})
 add_library(${PROJECT_NAME} SHARED ${SRC_FILES})
-
-# # add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_link_libraries(${PROJECT_NAME} PRIVATE netcdff)
+
+add_executable(mmf.exe "main.f90")
+target_link_libraries(mmf.exe PRIVATE netcdff ${PROJECT_NAME})
