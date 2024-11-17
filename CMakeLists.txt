@@ -11,7 +11,7 @@ set(SRC_FILES
   "./src/module_parallel.f90"
   "./src/interp_lib.f90"
   "./src/module_rootdepth.f90"
-  "./src/module_wtable.f90"
+  "./src/Groundwater/module_wtable.f90"
   "./src/module_nrtype.f90"
   "./src/module_initial.f90"
   "./src/module_io.f90"
