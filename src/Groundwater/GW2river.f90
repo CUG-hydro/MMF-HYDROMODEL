@@ -26,7 +26,6 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
 
         qrf(i, j) = rcond*(wtd(i, j) - riversurface)*(deltat/area(i, j))
 
-!if(i.eq.201.and.j.eq.191)write(6,*)'mirar',rivercond(i,j),pexp(i,j),rcond(i,j),wtd(i,j),eqwtd(i,j),qrf(i,j),riversurface,riverbed(i,j)
 !limit it to prevent sudden drops , lets say 50mm per day 0.05/86400.
 !                  qrf(i,j)=min(qrf(i,j),deltat*0.05/86400.)
 
@@ -43,8 +42,6 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
         qrf(i, j) = -max(min(Ksat(nsoil)*deltat, rdepth), 0.)*min(width(i, j)*length(i, j)/area(i, j), 1.)
       end if
 
-!if(i.eq.154.and.j.eq.443)write(6,*)'mirar qrf 1',wtd(i,j),maxdepth(i,j),riverdepth(i,j),width(i,j),length(i,j),nsoil,rcond,soilwatercap,qrf(i,j)
-!if(i.eq.886.and.j.eq.564)write(6,*)'mirar qrf 2',wtd(i,j),maxdepth(i,j),riverdepth(i,j),width(i,j),length(i,j),nsoil,rcond,soilwatercap,qrf(i,j)
     end do
   end do
 end subroutine gw2river

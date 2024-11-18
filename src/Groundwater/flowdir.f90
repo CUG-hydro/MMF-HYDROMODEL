@@ -1,8 +1,8 @@
 subroutine FLOWDIR(imax, js, je, fd, ii, jj, i, j)
   implicit none
   integer :: imax, js, je, ii, jj
-  integer, intent(inout) :: i, j
   integer, dimension(imax, js:je) :: fd
+  integer, intent(out) :: i, j
 
   select case (fd(ii, jj))
   case (2, 4, 8)
