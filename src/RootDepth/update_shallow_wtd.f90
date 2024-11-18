@@ -32,11 +32,11 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
       endif
 
       if(kwtd.gt.1)then
-         smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd-1)+1.5)/fdepth),1.),0.1)
+         smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd-1)+1.5)/fdepth),1.),0.1)
          if(wtd.lt.slz(kwtd)+0.01.and.smoi(kwtd-1).lt.smoisat)flag=1
       endif
 
-      smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
 
       if(smoi(kwtd).gt.smoieq(kwtd).and.flag.eq.0)then
 
@@ -45,7 +45,7 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
             rech=(wtdold-wtd) * (smoisat-smoieq(kwtd))
             iwtd=iwtd+1
             kwtd=kwtd+1
-!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 1',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd)
+!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 1',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),theta_sat(nsoil),smoieq(kwtd)
             if(kwtd.le.nzg)then
                if(smoi(kwtd).gt.smoieq(kwtd))then
                   wtdold=wtd
@@ -56,12 +56,12 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
                      nsoil=soiltxt(2)
                   endif
 
-                  smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
+                  smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
                   wtd = min( ( smoi(kwtd)*dz(kwtd) &
                      - smoieq(kwtd)*slz(iwtd) + smoisat*slz(kwtd) ) / &
                      ( smoisat-smoieq(kwtd) ), slz(iwtd))
                   rech=rech+(wtdold-wtd) * (smoisat-smoieq(kwtd))
-!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 2',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd)
+!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 2',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),theta_sat(nsoil),smoieq(kwtd)
                endif
             endif
          else  !wtd stays in the layer
@@ -69,13 +69,13 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
                - smoieq(kwtd)*slz(iwtd) + smoisat*slz(kwtd) ) / &
                ( smoisat-smoieq(kwtd) ), slz(iwtd))
             rech=(wtdold-wtd) * (smoisat-smoieq(kwtd))
-!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 3',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd),smoi(iwtd),smoieq(iwtd)
+!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 3',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),theta_sat(nsoil),smoieq(kwtd),smoi(iwtd),smoieq(iwtd)
          endif
 
       else    !wtd has gone down to the layer below
          wtd=slz(kwtd)
          rech=(wtdold-wtd) * (smoisat-smoieq(kwtd))
-!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 4',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd)
+!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 4',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),theta_sat(nsoil),smoieq(kwtd)
          kwtd=kwtd-1
          iwtd=iwtd-1
 !wtd crossed to the layer below. Now adjust it there
@@ -88,7 +88,7 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
                nsoil=soiltxt(2)
             endif
 
-            smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
+            smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
 
             if(smoi(kwtd).gt.smoieq(kwtd))then
                wtd = min( ( smoi(kwtd)*dz(kwtd) &
@@ -99,7 +99,7 @@ SUBROUTINE update_shallow_wtd(i,j,nzg,freedrain,slz,dz,soiltxt,smoieq,smoiwtd,sm
             endif
             rech = rech + (wtdold-wtd) * &
                (smoisat-smoieq(kwtd))
-!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 5',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),slmsts(nsoil),smoieq(kwtd)
+!if(i.eq.300.and.j.eq.200)write(6,*)'mirar 5',rech,wtdold,wtd,kwtd,iwtd,smoi(kwtd),theta_sat(nsoil),smoieq(kwtd)
          endif
       endif
    endif

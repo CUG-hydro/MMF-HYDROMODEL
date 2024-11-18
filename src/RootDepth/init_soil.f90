@@ -57,9 +57,9 @@ SUBROUTINE init_soil_param(fieldcp,nzg)
    integer :: nsoil,k,irec,nzg
    real, dimension(nzg,nstyp) :: fieldcp
 
-!define soilcp, the wilting point in terms of matric potential
+!define theta_cp, the wilting point in terms of matric potential
    do nsoil=1,nstyp
-      slwilt(nsoil)= slmsts(nsoil) * ( slpots(nsoil)/potwilt )**(1./slbs(nsoil))
+      slwilt(nsoil)= theta_sat(nsoil) * ( slpots(nsoil)/potwilt )**(1./slbs(nsoil))
    enddo
 
 end subroutine init_soil_param

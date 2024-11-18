@@ -50,7 +50,7 @@ CONTAINS
          do j=js,je
             do i=1,n2
                nsoil=soiltextures(1,i,j)
-               klat(i,j)=slcons(nsoil)*klatfactor(nsoil)
+               klat(i,j)=Ksat(nsoil)*klatfactor(nsoil)
             enddo
          enddo
 
@@ -79,7 +79,7 @@ CONTAINS
 
                   do k=1,nzg
                      nsoil=soiltxt(k)
-                     smoi(k,i,j)=0.5*(slmsts(nsoil)+soilcp(nsoil))
+                     smoi(k,i,j)=0.5*(theta_sat(nsoil)+theta_cp(nsoil))
                   enddo
                else
 
@@ -98,13 +98,13 @@ CONTAINS
 !first below wtd
                   do k=1,iwtd-2
                      nsoil = soiltxt(k)
-                     smoi(k,i,j)=slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoi(k,i,j)=theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
 !if(i.eq.51.and.j.eq.51)write(6,*)'mirar 1',k,smoi(k,i,j),fdepth(i,j),slz(k)
                   enddo
 !first wgp in the layer where the water table is
                   k=iwtd-1
                   nsoil = soiltxt(max(k,1))
-                  smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+                  smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
                   wgpmid = smoieq(k,i,j)
                   smoi(k,i,j)=(wgpmid*(slz(k+1)-wtd(i,j))+smoisat*(wtd(i,j)-slz(k))) &
                      / (slz(k+1)-slz(k))
@@ -113,10 +113,10 @@ CONTAINS
                   do k = iwtd,nzg
                      nsoil = soiltxt(nzg)
 
-                     hydcon = slcons(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
-                     smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+                     hydcon = Ksat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
                      psisat = slpots(nsoil)*min(max(exp(-(vctr4(k)+1.5)/fdepth(i,j)),1.),10.)
-                     smoicp = soilcp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoicp = theta_cp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
 
                      z1 = vctr4(k) - vctr4(k-1)
 
@@ -130,15 +130,10 @@ CONTAINS
 
                   enddo
 !         endif
-
-
                endif
             ENDIF
-
-
          ENDDO
       ENDDO
-
 
    end subroutine initialize
 !     ******************************************************************
@@ -196,14 +191,14 @@ CONTAINS
             do k=1,nzg
 
                nsoil = soiltxt(max(k-1,1))
-               smoisatdw=slmsts(nsoil)*max(min(exp((vctr4(max(k-1,1))+1.5)/fdepth(i,j)),1.),0.1)
+               smoisatdw=theta_sat(nsoil)*max(min(exp((vctr4(max(k-1,1))+1.5)/fdepth(i,j)),1.),0.1)
 
                nsoil = soiltxt(k)
 
-               hydcon = slcons(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
-               smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+               hydcon = Ksat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+               smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
                psisat = slpots(nsoil)*min(max(exp(-(vctr4(k)+1.5)/fdepth(i,j)),1.),10.)
-               smoicp = soilcp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
+               smoicp = theta_cp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth(i,j)),1.),0.1)
 
 
                tol=0.0001
@@ -274,31 +269,31 @@ CONTAINS
 
                nsoil = soiltxt(k)
                b = slbs(nsoil)
-               ddw = -slcons(nsoil)*slpots(nsoil)*b / slmsts(nsoil)**(b+3.)
-               kfdw = slcons(nsoil) / slmsts(nsoil)**(2. * b + 3.)
+               ddw = -Ksat(nsoil)*slpots(nsoil)*b / theta_sat(nsoil)**(b+3.)
+               kfdw = Ksat(nsoil) / theta_sat(nsoil)**(2. * b + 3.)
 
                nsoil1 = soiltxt(k-1)
                b1 = slbs(nsoil1)
-               dup = -slcons(nsoil1)*slpots(nsoil1)*b1 / slmsts(nsoil1)**(b1+3.)
-               kfup = slcons(nsoil1) / slmsts(nsoil1)**(2. * b1 + 3.)
+               dup = -Ksat(nsoil1)*slpots(nsoil1)*b1 / theta_sat(nsoil1)**(b1+3.)
+               kfup = Ksat(nsoil1) / theta_sat(nsoil1)**(2. * b1 + 3.)
 
 
                CC = (slz(k)-vctr4(k))*vctr6(k)
                alpha = 1. + CC
-               beta = -CC * slmsts(nsoil1)
+               beta = -CC * theta_sat(nsoil1)
 
-               smoi =  slmsts(nsoil)
+               smoi =  theta_sat(nsoil)
 
                do iter = 1, 100
 
                   smoimid = alpha * smoi + beta
                   DD =  0.5 * ( ddw * smoimid**(b+2.) + dup *smoimid**(b1+2.) )
-!     ff =  DD * ( smoi-slmsts(nsoil1) ) * vctr6(k) &
+!     ff =  DD * ( smoi-theta_sat(nsoil1) ) * vctr6(k) &
                   ff =  DD * ( smoi-smoibotbc ) * vctr6(k) &
                      + 0.5 * ( kfdw * smoimid**(2. * b + 3.) +  kfup * smoimid**(2. * b1 + 3.) )
 
                   dff = 0.5 * alpha * ( ddw * (b+2.) * smoimid**(b+1.) &
-!                 + dup * (b1+2.) * smoimid**(b1+1.) ) * ( smoi-slmsts(nsoil1) ) * vctr6(k) &
+!                 + dup * (b1+2.) * smoimid**(b1+1.) ) * ( smoi-theta_sat(nsoil1) ) * vctr6(k) &
                      + dup * (b1+2.) * smoimid**(b1+1.) ) * ( smoi-smoibotbc ) * vctr6(k) &
                      + DD * vctr6(k) &
                      + 0.5 * alpha * ( kfdw * (2.*b+3.) * smoimid**(2.*b+2.) + kfup * (2.*b1+3.) * smoimid**(2.*b1+2.) )
@@ -309,7 +304,7 @@ CONTAINS
 
                enddo
 
-               smoieq(k,i,j) = min(max(smoi,soilcp(nsoil)),.99*slmsts(nsoil))
+               smoieq(k,i,j) = min(max(smoi,theta_cp(nsoil)),.99*theta_sat(nsoil))
 
             enddo
 
@@ -372,10 +367,10 @@ CONTAINS
                endif
                if(k.gt.1)then
                   do kk=k,nzg
-                     smoi(kk)=soilcp(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoi(kk)=theta_cp(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
                   enddo
                   do kk=1,k-1
-                     smoi(kk)=slmsts(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoi(kk)=theta_sat(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
                   enddo
                endif
 
@@ -404,16 +399,16 @@ CONTAINS
 
 
 !if(k.eq.1)then
-!    if(abs(smoiwtd-slmsts(soiltxt(1))).lt.1.e-6)flag=1
-!    smoiwtd=slmsts(soiltxt(1))
+!    if(abs(smoiwtd-theta_sat(soiltxt(1))).lt.1.e-6)flag=1
+!    smoiwtd=theta_sat(soiltxt(1))
 !else
 
-!    if(1.-abs( smoi(k-1) /  (slmsts(nsoil) * max(min(exp((vctr4(k-1)+1.5)/fdepth(i,j)),1.),0.1))) &
+!    if(1.-abs( smoi(k-1) /  (theta_sat(nsoil) * max(min(exp((vctr4(k-1)+1.5)/fdepth(i,j)),1.),0.1))) &
 !               .gt.0.999.and.abs(vt3di(k)).lt.1.e-5)flag=1
-                  if(smoi(k-1).eq.slmsts(nsoil) * max(min(exp((vctr4(k-1)+1.5)/fdepth(i,j)),1. ) ,0.1))flag=1
+                  if(smoi(k-1).eq.theta_sat(nsoil) * max(min(exp((vctr4(k-1)+1.5)/fdepth(i,j)),1. ) ,0.1))flag=1
 
                   do kk=1,k-1
-                     smoi(kk)=slmsts(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
+                     smoi(kk)=theta_sat(nsoil)*max(min(exp((vctr4(kk)+1.5)/fdepth(i,j)),1.),0.1)
                   enddo
 !endif
 
@@ -429,9 +424,9 @@ CONTAINS
 
 
             ENDDO
-            smoisat = slmsts(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth(i,j)),1.),0.1)
+            smoisat = theta_sat(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth(i,j)),1.),0.1)
             psisat = slpots(nsoil)*min(max(exp(-(vctr4(1)+1.5)/fdepth(i,j)),1.),10.)
-            smoicp = soilcp(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth(i,j)),1.),0.1)
+            smoicp = theta_cp(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth(i,j)),1.),0.1)
 
             smoieq(1,i,j) = max( smoisat * ( psisat / &
                (psisat - dz(1)) ) ** (1./slbs(nsoil)) , smoicp )
@@ -479,7 +474,7 @@ CONTAINS
             nsoil=soiltxt(2)
          endif
 
-         smoi(k)=slmsts(nsoil)
+         smoi(k)=theta_sat(nsoil)
 
       enddo
 
@@ -498,13 +493,13 @@ CONTAINS
             nsoil=soiltxt(2)
          endif
 
-         hydcon=slcons(nsoil)
+         hydcon=Ksat(nsoil)
 !            icefac=fracliq(k)** (2. * slbs(nsoil) + 3.)
          icefac=1.
          kfdw =   icefac * hydcon  &
-            * (wgpmid  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
-         ddw =-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/slmsts(nsoil))  &
-            * (wgpmid/slmsts(nsoil)) **(slbs(nsoil)+2.)
+            * (wgpmid  / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
+         ddw =-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/theta_sat(nsoil))  &
+            * (wgpmid/theta_sat(nsoil)) **(slbs(nsoil)+2.)
 
          if(slz(k-1).lt.-0.30)then
             nsoil=soiltxt(1)
@@ -512,13 +507,13 @@ CONTAINS
             nsoil=soiltxt(2)
          endif
 
-         hydcon=slcons(nsoil)
+         hydcon=Ksat(nsoil)
 !            icefac=fracliq(k-1)** (2. * slbs(nsoil) + 3.)
          icefac=1.
          kfup =   icefac * hydcon  &
-            * (wgpmid / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
-         dup =-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/slmsts(nsoil))  &
-            * (wgpmid/slmsts(nsoil)) **(slbs(nsoil)+2.)
+            * (wgpmid / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
+         dup =-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/theta_sat(nsoil))  &
+            * (wgpmid/theta_sat(nsoil)) **(slbs(nsoil)+2.)
 
          if(kfdw.gt.0.)then
             kfmid(k)=0.5*(kfdw+kfup)
@@ -576,19 +571,19 @@ CONTAINS
       fracliqwtd=1.
 !            endif
 
-      hydcon=slcons(nsoil)
+      hydcon=Ksat(nsoil)
 !            icefac=fracliq(1)** (2. * slbs(nsoil) + 3.)
       icefac=1.
       kfdw =   icefac * hydcon  &
-         * (wgpmid  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
-      ddw = -icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/slmsts(nsoil))  &
-         * (wgpmid/slmsts(nsoil)) **(slbs(nsoil)+2.)
+         * (wgpmid  / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
+      ddw = -icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/theta_sat(nsoil))  &
+         * (wgpmid/theta_sat(nsoil)) **(slbs(nsoil)+2.)
 
       icefac=fracliqwtd** (2. * slbs(nsoil) + 3.)
       kfup =   icefac * hydcon  &
-         * (wgpmid / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
-      dup=-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/slmsts(nsoil))  &
-         * (wgpmid/slmsts(nsoil)) **(slbs(nsoil)+2.)
+         * (wgpmid / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
+      dup=-icefac * (hydcon*slpots(nsoil)*slbs(nsoil)/theta_sat(nsoil))  &
+         * (wgpmid/theta_sat(nsoil)) **(slbs(nsoil)+2.)
 
       if(kfdw.gt.0)then
          kfmid(1)=0.5*(kfdw+kfup)

@@ -12,7 +12,7 @@ subroutine LATERAL(imax,jmax,js,je,soiltxt,wtd,qlat,fdepth,topo,landmask,deltat,
    do j=js,je
       do i=1,imax
          nsoil=soiltxt(1,i,j)
-         klat(i,j)=slcons(nsoil)*klatfactor(nsoil)
+         klat(i,j)=Ksat(nsoil)*klatfactor(nsoil)
       enddo
    enddo
 
@@ -140,7 +140,6 @@ subroutine LATERALFLOW4(imax,jmax,js,je,wtd,qlat,fdepth,topo,landmask,deltat,are
    enddo
 
 !head=topo+wtd
-
    do j=js+1,je-1
       do i=2,imax-1
          IF(landmask(i,j).eq.1) then

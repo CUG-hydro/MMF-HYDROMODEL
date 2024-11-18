@@ -63,8 +63,8 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
          nsoil=soiltxt(2)
       endif
 
-      hydcon = slcons(nsoil)*max(min(exp((slz(k)+1.5)/fdepth),1.),0.1)
-      smoisat = slmsts(nsoil)*max(min(exp((slz(k)+1.5)/fdepth),1.),0.1)
+      hydcon = Ksat(nsoil)*max(min(exp((slz(k)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((slz(k)+1.5)/fdepth),1.),0.1)
       psisat = slpots(nsoil)*min(max(exp(-(slz(k)+1.5)/fdepth),1.),10.)
 
       wgpmid=min(wgpmid,smoisat)
@@ -123,8 +123,8 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
 !gmmgravitational drainage at the bottom
       nsoil=soiltxt(1)
 
-      hydcon = slcons(nsoil)*max(min(exp((slz(1)+1.5)/fdepth),1.),0.1)
-      smoisat = slmsts(nsoil)*max(min(exp((slz(1)+1.5)/fdepth),1.),0.1)
+      hydcon = Ksat(nsoil)*max(min(exp((slz(1)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((slz(1)+1.5)/fdepth),1.),0.1)
 
       kfmid(1) =   hydcon  &
          * (smoi(1)  / smoisat) ** (2. * slbs(nsoil) + 3.)
@@ -134,7 +134,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
       bb(1) = -( cc(1) + dz(1)/dtll )
       rr(1) = -smoi(1)*dz(1)/dtll -kfmid(2) + kfmid(1) + transp(1)/dtll
    ENDIF
-!if(i.eq.25.and.j.eq.30)write(6,*)'mirar wtd',wtd,soilcp(nsoil),slmsts(nsoil),nsoil
+!if(i.eq.25.and.j.eq.30)write(6,*)'mirar wtd',wtd,theta_cp(nsoil),theta_sat(nsoil),nsoil
 !if(i.eq.25.and.j.eq.30)write(6,*)'smoi antes',(smoi(k),k=1,nzg)
 
 !solve tridiagonal system and update smoi
@@ -150,7 +150,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
 !if(i.eq.25.and.j.eq.30)write(6,*)'capillarity',(-aa(k)*(smoi(k)-smoi(k-1)),k=2,nzg)
 !if(i.eq.25.and.j.eq.30)write(6,*)'drainage',(-kfmid(k)*dtll,k=2,nzg)
 
-! now check that soil moisture values are within bounds (slmsts and soilcp)
+! now check that soil moisture values are within bounds (theta_sat and theta_cp)
 ! if not, correct fluxes
 
 !if(i.eq.2017.and.j.eq.751)write(6,*)'mirar',smoi(nzg),vt3di(nzg)
@@ -167,7 +167,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
          nsoil=soiltxt(2)
       endif
 
-      smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
 
 !if(i.eq.54.and.j.eq.49)write(6,*)'soilflux',k,smoi(k),smoisat
       if(smoi(k).gt.smoisat)then
@@ -191,7 +191,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
       else
          nsoil=soiltxt(2)
       endif
-      smoicp = soilcp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+      smoicp = theta_cp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
 
       if(smoi(k).lt.smoicp)then
          dsmoi=max((smoicp-smoi(k))*dz(k),0.)
@@ -209,7 +209,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
       nsoil=soiltxt(2)
    endif
 
-   smoicp = soilcp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+   smoicp = theta_cp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
 
    if(smoi(k).lt.smoicp)then
 !first reduce soil evaporation from PET
@@ -233,7 +233,7 @@ subroutine SOILFLUXES(i,j,nzg,freedrain,dtll,slz,dz,soiltxt,smoiwtd,transp,trans
                nsoil=soiltxt(2)
             endif
 
-            smoicp = soilcp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+            smoicp = theta_cp(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
             if(smoi(k).lt.smoicp)then
                !take water from below
                dsmoi=max((smoicp-smoi(k))*dz(k),0.)

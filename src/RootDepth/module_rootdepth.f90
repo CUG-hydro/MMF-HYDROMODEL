@@ -4,16 +4,16 @@ MODULE module_rootdepth
    implicit none
 
    integer, parameter ::nvtyp=30,nstyp=13
-   real, save, dimension(nstyp) :: slmsts,soilcp,slbs,slcons,slpots,slwilt,klatfactor
-   data slmsts/0.395, 0.410, 0.435, 0.485, 0.451, 0.420  &
+   real, save, dimension(nstyp) :: theta_sat,theta_cp,slbs,Ksat,slpots,slwilt,klatfactor
+   data theta_sat/0.395, 0.410, 0.435, 0.485, 0.451, 0.420  &
       ,0.477, 0.476, 0.426, 0.492, 0.482, 0.863, 0.476/
 !data fieldcp/.135,.150,.195,.255,.240,.255,.322,.325  &
 !            ,.310,.370,.367,.535,.325/
-   data soilcp/.050  ,.052  ,.092  ,.170  ,.125  ,.148 &
+   data theta_cp/.050  ,.052  ,.092  ,.170  ,.125  ,.148 &
       ,.195  ,.235  ,.202  ,.257  ,.268  ,.195 ,.235/
    data slbs  /4.05, 4.38, 4.9, 5.3, 5.39, 7.12, 7.75, 8.52  &
       ,10.4, 10.4, 11.4, 7.75, 8.52/
-   data slcons /.000176   ,.0001563  ,.00003467  &
+   data Ksat /.000176   ,.0001563  ,.00003467  &
       ,.0000072  ,.00000695 ,.0000063  &
       ,.0000017  ,.00000245 ,.000002167  &
       ,.000001033,.000001283,.0000080,.000005787/
@@ -23,7 +23,7 @@ MODULE module_rootdepth
 !1m/day            ,.000001033,.000011574,.0000080/
 !0.5m/day           ,.000001033,.000005787,.0000080/
    data slpots/-0.121, -0.090, -0.218, -0.786, -0.478, -0.299  &
-      ,-0.356, -0.630, -0.153, -0.490, -0.405, -0.356, -0.630/
+      ,-0.356, -0.630, -0.153, -0.490, -0.405, -0.356, -0.630/                  ! \psi_sat
    data klatfactor /2.,3.,4.,10.,12.,14.,20.,24.,28.,40.,48.,48.,48./
 !data klatfactor /2.,3.,4.,10.,12.,14.,20.,100.,28.,40.,100.,48./
 !data klatfactor /2.,3.,4.,10.,12.,14.,20.,48.,28.,40.,48.,48./
@@ -247,7 +247,7 @@ CONTAINS
       integer :: nsoil
       real :: khyd,smoi
 
-      khyd = slcons(nsoil) * (smoi  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
+      khyd = Ksat(nsoil) * (smoi  / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
    END FUNCTION khyd
 
 END MODULE MODULE_ROOTDEPTH

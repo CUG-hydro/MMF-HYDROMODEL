@@ -64,14 +64,14 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
       endif
 
 !calculte the easiness function for extraction for each layer
-!      if(abs(slmsts(nsoil)-smoi(k)).lt.1.e-6.and.k.ne.nzg)then
+!      if(abs(theta_sat(nsoil)-smoi(k)).lt.1.e-6.and.k.ne.nzg)then
 !           easy(k)=0.
 !      if(smoi(k).le.slwilt(nsoil))then
 !          easy(k)=0.
 !      else
 
 ! calculate moisture potential
-      smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
       psisat = slpots(nsoil)*min(max(exp(-(vctr4(k)+1.5)/fdepth),1.),10.)
       pot = psisat  * (smoisat / smoi(k)) ** slbs(nsoil)
 
@@ -150,7 +150,7 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
          nsoil=soiltxt(2)
       endif
 
-      smoisat = slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
       psisat = slpots(nsoil)*min(max(exp(-(vctr4(k)+1.5)/fdepth),1.),10.)
       smoimin = smoisat * ( psisat / potwilt )**( 1. / slbs(nsoil) )
       smoifc = smoisat * ( psisat / potfc )**( 1. / slbs(nsoil) )
@@ -177,7 +177,7 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
    endif
 
    nsoil=soiltxt(2)
-   rs_s = 33.5 + 3.5*(slmsts(nsoil)/smoi(nzg))**2.38
+   rs_s = 33.5 + 3.5*(theta_sat(nsoil)/smoi(nzg))**2.38
 
    R_c = (delta + gamma) * ra_c + gamma*rs_c
    R_s = R_s + gamma*rs_s
@@ -211,7 +211,7 @@ subroutine EXTRACTION(i,j,nzg, slz, dz, deltat, soiltxt,wtd,smoi,smoiwtd &
 
    do k=max(kwtd,1),nzg
 !calculate hyd. conductivity
-!         kf =   slcons(nsoil) * (smoi(k)  / slmsts(nsoil)) ** (2. * slbs(nsoil) + 3.)
+!         kf =   Ksat(nsoil) * (smoi(k)  / theta_sat(nsoil)) ** (2. * slbs(nsoil) + 3.)
 !         maxwat = min( maxwat , kf*deltat )
 
 !extract water

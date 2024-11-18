@@ -34,7 +34,7 @@ subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,
       iwtd=k
       kwtd=iwtd-1
       nsoil=soiltxt(kwtd)
-      smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
+      smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
 !max water that fits in the layer
       maxwatup=dz(kwtd)*(smoisat-smoi(kwtd))
 
@@ -56,7 +56,7 @@ subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,
             iwtd=k+1
             if(k.eq.nzg+1)exit
             nsoil=soiltxt(k)
-            smoisat =slmsts(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
+            smoisat =theta_sat(nsoil)*max(min(exp((vctr4(k)+1.5)/fdepth),1.),0.1)
             maxwatup=dz(k)*(smoisat-smoi(k))
             if(totwater.le.maxwatup)then
                smoi(k) = smoi(k) + totwater / dz(k)
@@ -90,7 +90,7 @@ subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,
       do kwtd=k1,1,-1
 
          nsoil=soiltxt(kwtd)
-         smoisat = slmsts(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
+         smoisat = theta_sat(nsoil)*max(min(exp((vctr4(kwtd)+1.5)/fdepth),1.),0.1)
 
 !max water that the layer can yield
          maxwatdw=dz(kwtd)*(smoi(kwtd)-smoieq(kwtd))
@@ -122,7 +122,7 @@ subroutine update_wtb_qlat(nzg,slz,dz,wtd,qspring,qlat,smoi,smoieq,soiltextures,
 
       if(iwtd.eq.1.and.totwater.lt.0.)then
          nsoil=soiltxt(1)
-         smoisat = slmsts(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth),1.),0.1)
+         smoisat = theta_sat(nsoil)*max(min(exp((vctr4(1)+1.5)/fdepth),1.),0.1)
 
          smoi(1) = smoi(1) + totwater / dz(1)
          qlatflux(1) = qlatflux(1) + totwater

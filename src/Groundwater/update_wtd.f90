@@ -30,17 +30,17 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
          nsoil=soiltxt(kwtd)
 
 !max water that fits in the layer
-         maxwatup=dz(kwtd)*(slmsts(nsoil)-smoi(kwtd))
+         maxwatup=dz(kwtd)*(theta_sat(nsoil)-smoi(kwtd))
 
          if(totwater.le.maxwatup)then
             smoi(kwtd) = smoi(kwtd) + totwater / dz(kwtd)
-            smoi(kwtd) = min(smoi(kwtd),slmsts(nsoil))
+            smoi(kwtd) = min(smoi(kwtd),theta_sat(nsoil))
             if(smoi(kwtd).gt.smoieq(kwtd))wtd = min ( ( smoi(kwtd)*dz(kwtd) &
-               - smoieq(kwtd)*slz(iwtd) + slmsts(nsoil)*slz(kwtd) ) / &
-               ( slmsts(nsoil)-smoieq(kwtd) ) , slz(iwtd) )
+               - smoieq(kwtd)*slz(iwtd) + theta_sat(nsoil)*slz(kwtd) ) / &
+               ( theta_sat(nsoil)-smoieq(kwtd) ) , slz(iwtd) )
             totwater=0.
          else   !water enough to saturate the layer
-            smoi(kwtd) = slmsts(nsoil)
+            smoi(kwtd) = theta_sat(nsoil)
             totwater=totwater-maxwatup
             k1=iwtd
             do k=k1,nzg+1
@@ -48,17 +48,17 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
                iwtd=k+1
                if(k.eq.nzg+1)exit
                nsoil=soiltxt(k)
-               maxwatup=dz(k)*(slmsts(nsoil)-smoi(k))
+               maxwatup=dz(k)*(theta_sat(nsoil)-smoi(k))
                if(totwater.le.maxwatup)then
                   smoi(k) = smoi(k) + totwater / dz(k)
-                  smoi(k) = min(smoi(k),slmsts(nsoil))
+                  smoi(k) = min(smoi(k),theta_sat(nsoil))
                   if(smoi(k).gt.smoieq(k))wtd = min ( ( smoi(k)*dz(k) &
-                     - smoieq(k)*slz(iwtd) + slmsts(nsoil)*slz(k) ) / &
-                     ( slmsts(nsoil)-smoieq(k) ) , slz(iwtd) )
+                     - smoieq(k)*slz(iwtd) + theta_sat(nsoil)*slz(k) ) / &
+                     ( theta_sat(nsoil)-smoieq(k) ) , slz(iwtd) )
                   totwater=0.
                   exit
                else
-                  smoi(k) = slmsts(nsoil)
+                  smoi(k) = theta_sat(nsoil)
                   totwater=totwater-maxwatup
                endif
 
@@ -69,37 +69,37 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
       elseif(wtd.ge.slz(1)-dz(1))then ! wtd below bottom of soil model
 
          nsoil=soiltxt(1)
-         maxwatup=(slmsts(nsoil)-smoiwtd)*dz(1)
+         maxwatup=(theta_sat(nsoil)-smoiwtd)*dz(1)
 
          if(totwater.le.maxwatup)then
-            smoieqwtd = slmsts(nsoil) * ( slpots(nsoil) / &
+            smoieqwtd = theta_sat(nsoil) * ( slpots(nsoil) / &
                (slpots(nsoil) - dz(1)) ) ** (1./slbs(nsoil))
-            smoieqwtd = max(smoieqwtd,soilcp(nsoil))
+            smoieqwtd = max(smoieqwtd,theta_cp(nsoil))
 
             smoiwtd = smoiwtd + totwater / dz(1)
-            smoiwtd = min(smoiwtd,slmsts(nsoil))
+            smoiwtd = min(smoiwtd,theta_sat(nsoil))
             if(smoiwtd.gt.smoieqwtd)wtd = min( ( smoiwtd*dz(1) &
-               - smoieqwtd*slz(1) + slmsts(nsoil)*(slz(1)-dz(1)) ) / &
-               ( slmsts(nsoil)-smoieqwtd ) , slz(1) )
+               - smoieqwtd*slz(1) + theta_sat(nsoil)*(slz(1)-dz(1)) ) / &
+               ( theta_sat(nsoil)-smoieqwtd ) , slz(1) )
             totwater=0.
          else
-            smoiwtd=slmsts(nsoil)
+            smoiwtd=theta_sat(nsoil)
             totwater=totwater-maxwatup
             do k=1,nzg+1
                wtd=slz(k)
                iwtd=k+1
                if(k.eq.nzg+1)exit
                nsoil=soiltxt(k)
-               maxwatup=dz(k)*(slmsts(nsoil)-smoi(k))
+               maxwatup=dz(k)*(theta_sat(nsoil)-smoi(k))
                if(totwater.le.maxwatup)then
-                  smoi(k) = min(smoi(k) + totwater / dz(k),slmsts(nsoil))
+                  smoi(k) = min(smoi(k) + totwater / dz(k),theta_sat(nsoil))
                   if(smoi(k).gt.smoieq(k))wtd = min ( ( smoi(k)*dz(k) &
-                     - smoieq(k)*slz(iwtd) + slmsts(nsoil)*slz(k) ) / &
-                     ( slmsts(nsoil)-smoieq(k) ) , slz(iwtd) )
+                     - smoieq(k)*slz(iwtd) + theta_sat(nsoil)*slz(k) ) / &
+                     ( theta_sat(nsoil)-smoieq(k) ) , slz(iwtd) )
                   totwater=0.
                   exit
                else
-                  smoi(k) = slmsts(nsoil)
+                  smoi(k) = theta_sat(nsoil)
                   totwater=totwater-maxwatup
                endif
             enddo
@@ -108,45 +108,45 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
 !deep water table
       else
          nsoil=soiltxt(1)
-         maxwatup=(slmsts(nsoil)-smoiwtd)*(slz(1)-dz(1)-wtd)
+         maxwatup=(theta_sat(nsoil)-smoiwtd)*(slz(1)-dz(1)-wtd)
          if(totwater.le.maxwatup)then
-            wtd = wtd + totwater/(slmsts(nsoil)-smoiwtd)
+            wtd = wtd + totwater/(theta_sat(nsoil)-smoiwtd)
             totwater=0.
          else
             totwater=totwater-maxwatup
             wtd=slz(1)-dz(1)
-            maxwatup=(slmsts(nsoil)-smoiwtd)*dz(1)
+            maxwatup=(theta_sat(nsoil)-smoiwtd)*dz(1)
             if(totwater.le.maxwatup)then
-               smoieqwtd = slmsts(nsoil) * ( slpots(nsoil) / &
+               smoieqwtd = theta_sat(nsoil) * ( slpots(nsoil) / &
                   (slpots(nsoil) - dz(1)) ) ** (1./slbs(nsoil))
-               smoieqwtd = max(smoieqwtd,soilcp(nsoil))
+               smoieqwtd = max(smoieqwtd,theta_cp(nsoil))
 
                smoiwtd = smoiwtd + totwater / dz(1)
-               smoiwtd = min(smoiwtd,slmsts(nsoil))
+               smoiwtd = min(smoiwtd,theta_sat(nsoil))
                wtd = ( smoiwtd*dz(1) &
-                  - smoieqwtd*slz(1) + slmsts(nsoil)*(slz(1)-dz(1)) ) / &
-                  ( slmsts(nsoil)-smoieqwtd )
+                  - smoieqwtd*slz(1) + theta_sat(nsoil)*(slz(1)-dz(1)) ) / &
+                  ( theta_sat(nsoil)-smoieqwtd )
                totwater=0.
             else
-               smoiwtd=slmsts(nsoil)
+               smoiwtd=theta_sat(nsoil)
                totwater=totwater-maxwatup
                do k=1,nzg+1
                   wtd=slz(k)
                   iwtd=k+1
                   if(k.eq.nzg+1)exit
                   nsoil=soiltxt(k)
-                  maxwatup=dz(k)*(slmsts(nsoil)-smoi(k))
+                  maxwatup=dz(k)*(theta_sat(nsoil)-smoi(k))
 
                   if(totwater.le.maxwatup)then
                      smoi(k) = smoi(k) + totwater / dz(k)
-                     smoi(k) = min(smoi(k),slmsts(nsoil))
+                     smoi(k) = min(smoi(k),theta_sat(nsoil))
                      if(smoi(k).gt.smoieq(k))wtd = ( smoi(k)*dz(k) &
-                        - smoieq(k)*slz(iwtd) + slmsts(nsoil)*slz(k) ) / &
-                        ( slmsts(nsoil)-smoieq(k) )
+                        - smoieq(k)*slz(iwtd) + theta_sat(nsoil)*slz(k) ) / &
+                        ( theta_sat(nsoil)-smoieq(k) )
                      totwater=0.
                      exit
                   else
-                     smoi(k) = slmsts(nsoil)
+                     smoi(k) = theta_sat(nsoil)
                      totwater=totwater-maxwatup
                   endif
                enddo
@@ -179,8 +179,8 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
                smoi(kwtd) = smoi(kwtd) + totwater / dz(kwtd)
                if(smoi(kwtd).gt.smoieq(kwtd))then
                   wtd = ( smoi(kwtd)*dz(kwtd) &
-                     - smoieq(kwtd)*slz(iwtd) + slmsts(nsoil)*slz(kwtd) ) / &
-                     ( slmsts(nsoil)-smoieq(kwtd) )
+                     - smoieq(kwtd)*slz(iwtd) + theta_sat(nsoil)*slz(kwtd) ) / &
+                     ( theta_sat(nsoil)-smoieq(kwtd) )
                else
                   wtd=slz(kwtd)
                   iwtd=iwtd-1
@@ -200,9 +200,9 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
 
          if(iwtd.eq.1.and.totwater.lt.0.)then
             nsoil=soiltxt(1)
-            smoieqwtd = slmsts(nsoil) * ( slpots(nsoil) / &
+            smoieqwtd = theta_sat(nsoil) * ( slpots(nsoil) / &
                (slpots(nsoil) - dz(1)) ) ** (1./slbs(nsoil))
-            smoieqwtd = max(smoieqwtd,soilcp(nsoil))
+            smoieqwtd = max(smoieqwtd,theta_cp(nsoil))
 
             maxwatdw=dz(1)*(smoiwtd-smoieqwtd)
 
@@ -210,14 +210,14 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
 
                smoiwtd = smoiwtd + totwater / dz(1)
                wtd = max( ( smoiwtd*dz(1) &
-                  - smoieqwtd*slz(1) + slmsts(nsoil)*(slz(1)-dz(1)) ) / &
-                  ( slmsts(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
+                  - smoieqwtd*slz(1) + theta_sat(nsoil)*(slz(1)-dz(1)) ) / &
+                  ( theta_sat(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
 
             else
                wtd=slz(1)-dz(1)
                smoiwtd = smoiwtd + totwater / dz(1)
 !and now even further down
-               dzup=(smoieqwtd-smoiwtd)*dz(1)/(slmsts(nsoil)-smoieqwtd)
+               dzup=(smoieqwtd-smoiwtd)*dz(1)/(theta_sat(nsoil)-smoieqwtd)
                wtd=wtd-dzup
                smoiwtd=smoieqwtd
             endif
@@ -227,9 +227,9 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
 
 !if wtd was already below the bottom of the resolved soil crust
          nsoil=soiltxt(1)
-         smoieqwtd = slmsts(nsoil) * ( slpots(nsoil) / &
+         smoieqwtd = theta_sat(nsoil) * ( slpots(nsoil) / &
             (slpots(nsoil) - dz(1)) ) ** (1./slbs(nsoil))
-         smoieqwtd = max(smoieqwtd,soilcp(nsoil))
+         smoieqwtd = max(smoieqwtd, theta_cp(nsoil))
 
          maxwatdw=dz(1)*(smoiwtd-smoieqwtd)
 
@@ -237,13 +237,13 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
 
             smoiwtd = smoiwtd + totwater / dz(1)
             wtd = max( ( smoiwtd*dz(1) &
-               - smoieqwtd*slz(1) + slmsts(nsoil)*(slz(1)-dz(1)) ) / &
-               ( slmsts(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
+               - smoieqwtd*slz(1) + theta_sat(nsoil)*(slz(1)-dz(1)) ) / &
+               ( theta_sat(nsoil)-smoieqwtd ) , slz(1)-dz(1) )
          else
             wtd=slz(1)-dz(1)
             smoiwtd = smoiwtd + totwater / dz(1)
 !and now even further down
-            dzup=(smoieqwtd-smoiwtd)*dz(1)/(slmsts(nsoil)-smoieqwtd)
+            dzup=(smoieqwtd-smoiwtd)*dz(1)/(theta_sat(nsoil)-smoieqwtd)
             wtd=wtd-dzup
             smoiwtd=smoieqwtd
          endif
@@ -251,10 +251,10 @@ subroutine update_wtd(nzg,slz,dz,wtd,qspring,totwater,smoi,smoieq,soiltextures,s
       else
 !gmmequilibrium soil moisture content
          nsoil=soiltxt(1)
-         wgpmid = slmsts(nsoil) * ( slpots(nsoil) / &
+         wgpmid = theta_sat(nsoil) * ( slpots(nsoil) / &
             (slpots(nsoil) - (slz(1)-wtd)) ) ** (1./slbs(nsoil))
-         wgpmid=max(wgpmid,soilcp(nsoil))
-         syielddw=slmsts(nsoil)-wgpmid
+         wgpmid=max(wgpmid,theta_cp(nsoil))
+         syielddw=theta_sat(nsoil)-wgpmid
          wtdold=wtd
          wtd = wtdold + totwater/syielddw
 !update wtdwgp
