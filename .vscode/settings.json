@@ -1,5 +1,17 @@
 {
   "files.exclude": {
     "**/*.mod": true
-  }
+  },
+  "fortran.formatting.formatter": "fprettify",
+  "fortran.formatting.fprettifyArgs": [
+    "--enable-decl",
+    "--enable-operators",
+    "-i2",
+    "--enable-proc", 
+    "--whitespace-only",
+  ],
+  // "fortran.formatting.formatter": "findent",
+  // "fortran.formatting.findentArgs": [
+  //   "-i2"
+  // ],
 }
