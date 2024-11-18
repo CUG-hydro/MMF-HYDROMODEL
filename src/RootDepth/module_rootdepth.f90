@@ -1,4 +1,5 @@
 MODULE module_rootdepth
+  use nrtype
 
   implicit none
 

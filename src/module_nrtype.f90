@@ -38,8 +38,8 @@ MODULE nrtype
 Contains
 
   function clamp(value, min_val, max_val)
-    real(dp), intent(in) :: value, min_val, max_val
-    real(dp) :: clamp
+    real, intent(in) :: value, min_val, max_val
+    real :: clamp
 
     if (value < min_val) then
       clamp = min_val

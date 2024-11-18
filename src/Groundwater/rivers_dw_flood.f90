@@ -201,7 +201,7 @@ subroutine RIVERS_DW_FLOOD(imax, js, je, deltat, dtlr, fd, bfd, qnew, qs, qrf, d
         else
           aa = depth(i, j)*width(i, j)/(2.*depth(i, j) + width(i, j))
           speed = (aa**(2./3.))*sqrt(slope(i, j))/0.03
-          speed = max(min(speed, length(i, j)/dtlr), 0.01)
+          speed = clamp(speed, 0.01, length(i, j)/dtlr)
 
 !now calculate the new q
           qnew(i, j) = speed*depth(i, j)*width(i, j)

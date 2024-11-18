@@ -62,8 +62,8 @@ subroutine SOILFLUXES(i, j, nzg, freedrain, dtll, slz, dz, soiltxt, smoiwtd, tra
       nsoil = soiltxt(2)
     end if
 
-    hydcon = Ksat(nsoil)*max(min(exp((slz(k) + 1.5)/fdepth), 1.), 0.1)
-    smoisat = theta_sat(nsoil)*max(min(exp((slz(k) + 1.5)/fdepth), 1.), 0.1)
+    hydcon = Ksat(nsoil)*clamp(exp((slz(k) + 1.5)/fdepth), 0.1, 1.0)
+    smoisat = theta_sat(nsoil)*clamp(exp((slz(k) + 1.5)/fdepth), 0.1, 1.0)
     psisat = slpots(nsoil)*min(max(exp(-(slz(k) + 1.5)/fdepth), 1.), 10.)
 
     wgpmid = min(wgpmid, smoisat)

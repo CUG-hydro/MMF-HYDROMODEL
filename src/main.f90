@@ -412,10 +412,7 @@ program driver
    daylai=1
    monthlai=1
 
-
-
 !read past temp,wind,qair,pres
-
 !       icount = (day-1)*8 + hour/3+1
    icount = (day-1)*24 + hour +1
 
@@ -712,10 +709,7 @@ program driver
 !if(pid.eq.1)write(6,'(a12,5f7.3)')'pid 1 CPU(sec)',T5-T1,t2-t1,t3-t2,t4-t3,t5-t4
 
 
-
-
 !output
-
 !        if(year.ge.1981)then
 !         if(day.eq.2)then
 
