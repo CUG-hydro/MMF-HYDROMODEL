@@ -244,7 +244,6 @@ program driver
    call read_topo_era5(n2,n3,js,je,landmask,lats,lons,topoera5)
 
 !initialize variables
-
    if(riverswitch.eq.1)then
       call read_flowdir(n2,n3,js,je,fd,bfd,filerivers)
       call read_param_river(n2,n3,js,je,riverlength,filerivers,2)
@@ -252,9 +251,9 @@ program driver
       call read_param_river(n2,n3,js,je,slope,filerivers,5)
       call read_param_river(n2,n3,js,je,topoflood,filerivers,9)
       call read_param_river(n2,n3,js,je,maxdepth,filerivers,11)
-      riverarea = riverwidth*riverlength
-      floodarea = max( area-riverarea , 0. )
-      riverchannel = maxdepth*riverarea
+      riverarea = riverwidth * riverlength
+      floodarea = max( area - riverarea , 0. )
+      riverchannel = maxdepth * riverarea
    endif
 
 !        open(56,file='testinput.dat' &
@@ -321,9 +320,7 @@ program driver
 !           where(riverwidth.lt.1.00001)riverdepth=max(min(riverdepth,5.),floodheight)
 !           where(riverwidth.lt.0.5)riverdepth=floodheight
 !           where(riverwidth.lt.0.5)riverflow=0.
-
    else
-
       if(freedrain.eq.0)then
          call READWTDNC(n2,n3,js,je,wtd,filewtd)
          where(wtd.lt.-1.e5)wtd=0.
@@ -412,7 +409,6 @@ program driver
 
 !       call READFORCINGSACC(n2,js,je,filename,icount,hour,lats,lons,rain,rshort,netrad,landmask &
 !                        ,varforcing,reqforcing,istartforcing)
-
    daysn = day
    hoursn = hour
    yearsn = year
@@ -491,15 +487,12 @@ program driver
       endif
    endif
 
-
 !!!!!! do something if restarting on day day different than jan 1
-
    DO WHILE(year.ne.2019)
 !DO WHILE(month.ne.2)
 
 !read icefactor before updating time
       icount = (day-1)*24 + hour +1
-
       write(filename,'(i4.4,a1,i2.2,a3)')year,'-',month,'.nc'
 
 !       icount = (julday(month,day,year)-1)*8 + hour/3+1
@@ -527,12 +520,9 @@ program driver
          daysfromstart = daynumber(day,month,year)
       endif
 
-
       if(pid.eq.0)write(6,*)'Hour, day, month, year',hour,day,month,year,lastday,daysfromstart
 
-
       t1=mpi_wtime()
-
       icount = (day-1)*24 + hour +1
 
       write(filename,'(i4.4,a1,i2.2,a3)')year,'-',month,'.nc'
@@ -551,16 +541,13 @@ program driver
       temp_past = temp_fut
       qair_past   = qair_fut
 
-
       call READFORCINGSACC(n2,js,je,filename,icount,hour,lats,lons,rain,rshort,netrad,landmask &
          ,varforcing,reqforcing,istartforcing)
 
 !read snowmelt for the next 3h
-
       hoursn = hour + 2 ! so, add 2 + 1 = 3h from present time
 
       if(mod(hoursn,3).eq.0)then
-
          daysn = day
          monthsn = month
          yearsn = year
@@ -583,7 +570,6 @@ program driver
          icount = (daysn-1)*8 + hoursn/3 +1
 
          write(filename,'(i4.4,a1,i2.2,a3)')yearsn,'-',monthsn,'.nc'
-
          call READFORCINGSSNOW(n2,js,je,filename,icount,hoursn,lats,lons,snow_fut,landmask  &
             ,varforcing4,requestsnow,istartforcing4)
 
@@ -594,11 +580,9 @@ program driver
          else
             snow_past=snow_fut
          endif
-
       endif
 
       precip = rain + snow
-
 
 !        open(56,file='testinput.dat' &
 !           ,form='unformatted',convert='big_endian',access='direct',recl=4*n2*n3)
@@ -626,7 +610,6 @@ program driver
          qslat = 0.
          qlatsum = qlatsum + qlat*1.e3
       endif
-
 
       if(riverswitch.eq.1)then
          call GW2RIVER(n2,js,je,nzg,slz,deltat,soiltxt,landmask,wtd,maxdepth,riverdepth &
@@ -661,29 +644,21 @@ program driver
 !this is not needed now, all layers are treaded the same
 !       if(freedrain.eq.0.and.hour.eq.3) call WTABLE(n2,n3,js,je,nzg,slz,dz,area,soiltxt,wtd,deeprech,rech,qslat,fdepth &
 !                                     ,topo,landmask,deltatwtd,smoi,smoieq,smoiwtd,qsprings)
-
       if(riverswitch.eq.1)then
-
          call FLOODING(n2,js,je,deltat,fd,bfd,topoflood,area,riverwidth,riverlength,riverdepth,floodheight,delsfcwat)
 
          do iter_river=1,niter_river
-
             call RIVERS_KW_FLOOD(n2,js,je,deltat,dtlr,fd,bfd,riverflow,qsrun,qrf,delsfcwat &
                ,slope,riverdepth,riverwidth,riverlength,maxdepth,area,riverarea,floodarea,riverchannel &
                ,riverflowmean,floodheight,topoflood)
-
          enddo
 
          qsrun = 0.
          delsfcwat = 0.
-
       endif
 
-
       t5=mpi_wtime()
-
       if(pid.eq.numtasks/2)write(6,'(a12,5f7.3)')'CPU(sec)',T5-T1,t2-t1,t3-t2,t4-t3,t5-t4
-
 
       inpair(1)=T5-T1
       inpair(2)=float(pid)
@@ -693,13 +668,11 @@ program driver
       if(pid.eq.numtasks-1)write(6,'(a27,f7.3,f7.0)')'max CPU total step, pid',outpair(1),outpair(2)
 !if(pid.eq.1)write(6,'(a12,5f7.3)')'pid 1 CPU(sec)',T5-T1,t2-t1,t3-t2,t4-t3,t5-t4
 
-
 !output
 !        if(year.ge.1981)then
 !         if(day.eq.2)then
 
-      if(day.eq.1.and.hour.eq.0)then
-
+      if(day.eq.1.and.hour.eq.0) then
          riverflowmean = riverflowmean/(float(lastday)*86400.)
          delsfcwatsum = delsfcwatsum/float(lastday)
          qrfsum = qrfsum/float(lastday)
@@ -714,7 +687,6 @@ program driver
          waterdeficit=waterdeficit/float(lastday)
          watext=watext/float(lastday)
          watextdeep=watextdeep/float(lastday)
-
 !              irec=0
 !          endif
 !              if(month.gt.1.or.year.eq.1983)then
@@ -740,7 +712,6 @@ program driver
                   ,wtdflux,et_s_daily,et_c_daily,transptop,infilk,smoi_daily,wtd_daily &
                   ,daysforoutput,filename )
 
-
             else
 
                write(filename,'(a13,i2.2,a3,i4.4,a3)')'rootdaily_wt_',day,monthname(month),year,'.nc'
@@ -758,8 +729,6 @@ program driver
                call writeoutputnc_daily_par(n2,n3,js,je,nzg,daypast-1 &
                   ,wtdflux,et_s_daily,et_c_daily,transptop,infilk,smoi_daily,wtd_daily &
                   ,daysforoutput,filename )
-
-
             endif
 
          else
@@ -767,13 +736,11 @@ program driver
 !                         if(year.eq.1982)filename='smoiwatext_fd_12.dat'
             write(filename,'(a13,i2.2,a3,i4.4,a6)')'rootdaily_fd_',day,monthname(month),year,'.grads'
             filename='outputfd/'//filename
-
             call writeoutputfd(n2,n3,js,je,nzg,smoi,waterdeficit,watext &
                ,qsrunsum,rech,et_c,ppacum &
                ,filename,irec,istart,req,req2,req3)
          endif
 !               endif
-
          riverflowmean = 0.
          delsfcwatsum = 0.
          qrfsum = 0.

@@ -6,7 +6,8 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
   integer, dimension(imax, js:je) :: landmask
   real, dimension(imax, js:je) :: wtd, maxdepth, riverdepth, width, length, area, qrf, fdepth
   real :: riversurface, deltat, soilwatercap, rcond, rdepth, hydcon
-
+  real :: frac
+  
   soilwatercap = 0.
   qrf = 0.
 
@@ -18,8 +19,9 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
       nsoil = soiltxt(2, i, j)
       riversurface = -(maxdepth(i, j) - rdepth)
       if (riversurface .ge. 0.) cycle      !this just in case...
-
-      hydcon = Ksat(nsoil)*max(min(exp((-maxdepth(i, j) + 1.5)/fdepth(i, j)), 1.), 0.1)
+      
+      ! BUG: 未考虑河床的厚度。
+      hydcon = Ksat(nsoil)*clamp(exp((-maxdepth(i, j) + 1.5)/fdepth(i, j)), 0.1, 1.)
       rcond = width(i, j)*length(i, j)*hydcon
 
       if (wtd(i, j) .gt. riversurface) then
@@ -33,13 +35,17 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
 
         soilwatercap = -rcond*(wtd(i, j) - riversurface)*(deltat/area(i, j))
 !                  soilwatercap=min(soilwatercap,deltat*0.05/86400.)
-        qrf(i, j) = -max(min(soilwatercap, riverdepth(i, j)), 0.)*min(width(i, j)*length(i, j)/area(i, j), 1.)
+        
+        qrf(i, j) = -max(                             &
+          min(soilwatercap, riverdepth(i, j)), 0.) *  &
+          min(width(i, j)*length(i, j)/area(i, j), 1.)
 
       else
 !water table below river bed, disconnected from the river. No rcond use, just
 !infiltration. Assume it occurs at the Ksat rate and water goes directly to the
 !water table.
-        qrf(i, j) = -max(min(Ksat(nsoil)*deltat, rdepth), 0.)*min(width(i, j)*length(i, j)/area(i, j), 1.)
+        frac = min(width(i, j)*length(i, j)/area(i, j), 1.)
+        qrf(i, j) = -max(min(Ksat(nsoil)*deltat, rdepth), 0.) * frac
       end if
 
     end do
