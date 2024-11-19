@@ -12,10 +12,10 @@ CONTAINS
   include "GW2river.f90"
   include "lateralflow.f90"
   include "moveqrf.f90"
-  include "rivers_dw_flood.f90"
   include "rivers_kw_flood.f90"
   include "update_deep_wtb.f90"
   include "update_wtd.f90"
+  ! include "rivers_dw_flood.f90"
 
   subroutine WTABLE(imax, jmax, js, je, nzg, slz, dz, area, soiltxt, wtd, bottomflux, rech, qslat, fdepth, topo, landmask, deltat &
                     , smoi, smoieq, smoiwtd, qsprings)

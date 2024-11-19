@@ -787,7 +787,7 @@ CONTAINS
 
   end subroutine readvar
 !******************************************************************************************************
-  subroutine READTOPOERA5(n2, n3, js, je, landmask, lats, lons, topoera5)
+  subroutine read_topo_era5(n2, n3, js, je, landmask, lats, lons, topoera5)
     use netcdf
     use interp_lib
 
@@ -905,7 +905,7 @@ CONTAINS
 
     call MPI_TYPE_FREE(domblocke2obs, ierr)
 
-  end subroutine readtopoera5
+  end subroutine read_topo_era5
 
 !******************************************************************************************************
   SUBROUTINE READLAI(n2, js, je, lats, lons, year, month, day, lai)
@@ -1097,7 +1097,7 @@ CONTAINS
 
   end subroutine readlaiclim
 !******************************************************************************************************
-  subroutine READLAICHINA(n2, n3, js, je, filelai, lai)
+  subroutine read_lai_china(n2, n3, js, je, filelai, lai)
     use netcdf
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n, month
@@ -1170,7 +1170,7 @@ CONTAINS
       call MPI_wait(request, status, ierr)
     end if
 
-  end subroutine readlaichina
+  end subroutine read_lai_china
 
 !******************************************************************************************************
 

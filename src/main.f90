@@ -207,17 +207,13 @@ program driver
 !allocate(reqforcing5(numtasks-2))
 !allocate(varforcing5(xdim,ydim,0:23,4))
 
-
 !timestep for rivers
    niter_river = max(1,nint(deltat/deltatriver+0.4))
 !        niter_river = 1
    dtlr = deltat / float(niter_river)
-
    if(pid.eq.0)write(6,*)'niter_river',niter_river,dtlr
 
-
 !counter to tell the output routine that it is first time
-
    istart=1
    istarthis=1
    istartforcing=1
@@ -227,43 +223,35 @@ program driver
    istartforcing5=1
    irec=0
 
-!initialize some soil parameters
-
+  !initialize some soil parameters
    call init_soil_param(fieldcp,nzg)
 
    if(pid.eq.0)write(6,*)'slwilt',slwilt
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
 !read in fixed fields
-
    if(pid.eq.0)write(6,*)'reading soiltxt,topo and landmask'
-
-   call READINITIAL(n2,n3,js,je,soiltxt,topo,fdepth,landmask,filesoil,filetopo,filef)
+   call read_initial(n2,n3,js,je,soiltxt,topo,fdepth,landmask,filesoil,filetopo,filef)
 
 !soiltxt=13
-
 !write(6,*)'mirar soiltxt',soiltxt(1,300,300),soiltxt(2,300,300)
-
-   call READVEG(n2,n3,js,je,veg,fileveg)
-
-   call READHVEG(n2,n3,js,je,hveg,filehveg)
-
-   call READLATLON(n2,n3,js,je,lats,lons,area,dxy,swlat,swlon)
+   call read_veg(n2,n3,js,je,veg,fileveg)
+   call read_hveg(n2,n3,js,je,hveg,filehveg)
+   call read_latlon(n2,n3,js,je,lats,lons,area,dxy,swlat,swlon)
 
    if(pid.eq.1)write(6,*)'SW corner of the domain',lats(1,1),lons(1,1)
 
-   call READTOPOERA5(n2,n3,js,je,landmask,lats,lons,topoera5)
+   call read_topo_era5(n2,n3,js,je,landmask,lats,lons,topoera5)
 
 !initialize variables
 
    if(riverswitch.eq.1)then
-      call READFLOWDIRECTION(n2,n3,js,je,fd,bfd,filerivers)
-      call READRIVERPARAMETERS(n2,n3,js,je,riverlength,filerivers,2)
-      call READRIVERPARAMETERS(n2,n3,js,je,riverwidth,filerivers,4)
-      call READRIVERPARAMETERS(n2,n3,js,je,slope,filerivers,5)
-      call READRIVERPARAMETERS(n2,n3,js,je,topoflood,filerivers,9)
-      call READRIVERPARAMETERS(n2,n3,js,je,maxdepth,filerivers,11)
+      call read_flowdir(n2,n3,js,je,fd,bfd,filerivers)
+      call read_param_river(n2,n3,js,je,riverlength,filerivers,2)
+      call read_param_river(n2,n3,js,je,riverwidth,filerivers,4)
+      call read_param_river(n2,n3,js,je,slope,filerivers,5)
+      call read_param_river(n2,n3,js,je,topoflood,filerivers,9)
+      call read_param_river(n2,n3,js,je,maxdepth,filerivers,11)
       riverarea = riverwidth*riverlength
       floodarea = max( area-riverarea , 0. )
       riverchannel = maxdepth*riverarea
@@ -288,7 +276,6 @@ program driver
    call init_soil_depth(nzg,slz,dz)
 
    if(pid.eq.0)write(6,*)'soil layers',(slz(k),k=1,nzg+1),(dz(k),k=1,nzg)
-
    if(pid.eq.0)write(6,*)'soil nodes',(-0.5 * (slz(k) + slz(k+1)),k=1,nzg)
 
    pppendepthold=nzg+1
@@ -305,24 +292,24 @@ program driver
 !                filename='/mnt/netapp2/Store_uscfmgmm/GLUSTER/SAMERICA/outputSAinitial/history_wt_01jan2014.nc'
 !               filename='/mnt/netapp2/Store_uscfmgmm/GLUSTER/SAMERICA/outputera5SAini/history_wt_01jan2014.nc'
       filename='/mnt/lustre/scratch/home/usc/fm/gmm/ROOTDEPTH/SAMERICA/outputera5SA/history_wt_01may2017.nc'
-      call READHISTORYNC(n2,n3,js,je,nzg,smoi,smoiwtd,intercepstore,wtd,inactivedays,filename)
+      call read_historyNC(n2,n3,js,je,nzg,smoi,smoiwtd,intercepstore,wtd,inactivedays,filename)
       if(freedrain.eq.0)then
 !                 call READSMOIEQ(n2,n3,nzg,js,je,smoieq,filesmoieq)
          call EQSOILMOISTUREtheor(n2,js,je,nzg,slz,dz,soiltxt,landmask,fdepth,smoieq)
       endif
       if(riverswitch.eq.1)then
-         call READHISTORYVARNC(n2,n3,js,je,riverflow,'RIVERFLOW',filename)
-         call READHISTORYVARNC(n2,n3,js,je,riverdepth,'RIVERDEPTH',filename)
-         call READHISTORYVARNC(n2,n3,js,je,floodheight,'FLOODHEIGHT',filename)
+         call read_historyVARNC(n2,n3,js,je,riverflow,'RIVERFLOW',filename)
+         call read_historyVARNC(n2,n3,js,je,riverdepth,'RIVERDEPTH',filename)
+         call read_historyVARNC(n2,n3,js,je,floodheight,'FLOODHEIGHT',filename)
       endif
 
-      call READHISTORYBYTEVARNC(n2,n3,js,je,pppendepthold,'PPPENDEPTHOLD',filename)
+      call read_historyBYTEVARNC(n2,n3,js,je,pppendepthold,'PPPENDEPTHOLD',filename)
 
-      call READHISTORYVARNC(n2,n3,js,je,wtdflux(1,js,1),'WTDFLUX',filename)
-      call READHISTORYVARNC(n2,n3,js,je,et_s_daily(1,js,1),'ET_S_DAILY',filename)
-      call READHISTORYVARNC(n2,n3,js,je,et_c_daily(1,js,1),'ET_C_DAILY',filename)
-      call READHISTORYVARNC(n2,n3,js,je,transptop(1,js,1),'TRANSPTOP',filename)
-      call READHISTORYBYTEVARNC(n2,n3,js,je,infilk(1,js,1),'INFILK',filename)
+      call read_historyVARNC(n2,n3,js,je,wtdflux(1,js,1),'WTDFLUX',filename)
+      call read_historyVARNC(n2,n3,js,je,et_s_daily(1,js,1),'ET_S_DAILY',filename)
+      call read_historyVARNC(n2,n3,js,je,et_c_daily(1,js,1),'ET_C_DAILY',filename)
+      call read_historyVARNC(n2,n3,js,je,transptop(1,js,1),'TRANSPTOP',filename)
+      call read_historyBYTEVARNC(n2,n3,js,je,infilk(1,js,1),'INFILK',filename)
 
       where(veg.lt.0.5)landmask=0
 
@@ -358,8 +345,8 @@ program driver
       floodheight = 0.
 
       if(riverswitch.eq.1)then
-         call READRIVERPARAMETERS(n2,n3,js,je,riverflow,filerivers,6)
-         call READRIVERPARAMETERS(n2,n3,js,je,riverdepth,filerivers,3)
+         call read_param_river(n2,n3,js,je,riverflow,filerivers,6)
+         call read_param_river(n2,n3,js,je,riverdepth,filerivers,3)
       endif
    endif
 
@@ -453,7 +440,7 @@ program driver
    write(filename,'(i4.4,a13,i4.4,a1,i3.3,a3)')yearlai,'/SAhires_30s_',yearlai,'_',jdaylaipast,'.nc'
    filename='/mnt/netapp2/Store_uscfmgmm/LAI/'//filename(1:len_trim(filename))
 
-   call READLAICHINA(n2,n3,js,je,filename,lai_past)
+   call read_lai_china(n2,n3,js,je,filename,lai_past)
 
    jdaylaifut = jdaylaipast + 8 !this works because initial time is always the first day of a month
 
@@ -461,9 +448,7 @@ program driver
    write(filename,'(i4.4,a13,i4.4,a1,i3.3,a3)')yearlai,'/SAhires_30s_',yearlai,'_',jdaylaifut,'.nc'
    filename='/mnt/netapp2/Store_uscfmgmm/LAI/'//filename(1:len_trim(filename))
 
-   call READLAICHINA(n2,n3,js,je,filename,lai_fut)
-
-
+   call read_lai_china(n2,n3,js,je,filename,lai_fut)
 
    tfact = float(jday -jdaylaipast) / float(jdaylaifut - jdaylaipast)
    lai = lai_past + (lai_fut - lai_past) * tfact
@@ -890,7 +875,7 @@ program driver
             filename='/mnt/netapp2/Store_uscfmgmm/LAI/'//filename(1:len_trim(filename))
 
             lai_past = lai_fut
-            call READLAICHINA(n2,n3,js,je,filename,lai_fut)
+            call read_lai_china(n2,n3,js,je,filename,lai_fut)
 
             if(pid.eq.0)write(6,*)'jdaylaipast,jdaylaifut,yearlai',jdaylaipast,jdaylaifut,yearlai
 

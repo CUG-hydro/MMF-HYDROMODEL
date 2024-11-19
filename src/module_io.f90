@@ -8,7 +8,7 @@ MODULE module_io
 CONTAINS
 
 !******************************************************************************************************
-  subroutine READINITIAL(n2, n3, js, je, soiltxt, topo, fdepth, landmask, filesoil, filetopo, filef)
+  subroutine read_initial(n2, n3, js, je, soiltxt, topo, fdepth, landmask, filesoil, filetopo, filef)
     use netcdf
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n
@@ -206,10 +206,10 @@ CONTAINS
 
     where (fdepth .lt. 1.e-6) fdepth = 100.
 
-  end subroutine readinitial
+  end subroutine read_initial
 
 !     ******************************************************************
-  subroutine READLATLON(n2, n3, js, je, lats, lons, area, dx, swlat, swlon)
+  subroutine read_latlon(n2, n3, js, je, lats, lons, area, dx, swlat, swlon)
 
     integer :: n2, n3, js, je, i, j, ii, jj
     real, dimension(n2, js:je):: lats, lons, area
@@ -249,7 +249,7 @@ CONTAINS
       end do
     end do
 
-  end subroutine readlatlon
+  end subroutine read_latlon
 
 !******************************************************************************************************
   subroutine READWTD(n2, n3, js, je, wtd)
@@ -375,7 +375,7 @@ CONTAINS
   end subroutine readwtdnc
 
 !******************************************************************************************************
-  subroutine READVEG(n2, n3, js, je, veg, fileveg)
+  subroutine read_veg(n2, n3, js, je, veg, fileveg)
     use netcdf
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n
@@ -441,10 +441,10 @@ CONTAINS
       call MPI_wait(request, status, ierr)
     end if
 
-  end subroutine readveg
+  end subroutine read_veg
 
 !******************************************************************************************************
-  subroutine READHVEG(n2, n3, js, je, hveg, filehveg)
+  subroutine read_hveg(n2, n3, js, je, hveg, filehveg)
     use netcdf
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n
@@ -511,7 +511,7 @@ CONTAINS
       call MPI_wait(request, status, ierr)
     end if
 
-  end subroutine readhveg
+  end subroutine read_hveg
 
 !******************************************************************************************************
   subroutine READSMOIEQ(n2, n3, nzg, js, je, smoieq, filesmoieq)
@@ -588,7 +588,7 @@ CONTAINS
 
   end subroutine readsmoieq
 !******************************************************************************************************
-  subroutine READFLOWDIRECTION(n2, n3, js, je, fd, bfd, filerivers)
+  subroutine read_flowdir(n2, n3, js, je, fd, bfd, filerivers)
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n
     integer, dimension(n2, js:je) :: fd, bfd
@@ -687,10 +687,10 @@ CONTAINS
       bfd = nint(var)
     end if
 
-  end subroutine readflowdirection
+  end subroutine read_flowdir
 
 !******************************************************************************************************
-  subroutine READRIVERPARAMETERS(n2, n3, js, je, var, filerivers, irec)
+  subroutine read_param_river(n2, n3, js, je, var, filerivers, irec)
 
     integer :: n2, n3, js, je, i, j, irec, iun, k, n
     real, dimension(n2, js:je) :: var
@@ -741,7 +741,7 @@ CONTAINS
       call MPI_wait(request, status, ierr)
     end if
 
-  end subroutine readriverparameters
+  end subroutine read_param_river
 !     ******************************************************************
 
   subroutine handle_err(statusnc)
@@ -755,7 +755,7 @@ CONTAINS
 
 !     ******************************************************************
 
-  subroutine READHISTORY(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, filename)
+  subroutine read_history(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, filename)
     use netcdf
 
     integer :: n2, n3, js, je, nzg, k, irec, i, j, n
@@ -817,10 +817,10 @@ CONTAINS
 
     end if
 
-  end subroutine readhistory
+  end subroutine read_history
 
 !******************************************************************************************************
-  subroutine READHISTORYNC(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, inactivedays, filename)
+  subroutine read_historyNC(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, inactivedays, filename)
     use netcdf
 
     integer :: n2, n3, nzg, js, je, i, j, irec, iun, k, n
@@ -1045,9 +1045,9 @@ CONTAINS
 
     end if
 
-  end subroutine readhistorync
+  end subroutine read_historync
 !******************************************************************************************************
-  subroutine READHISTORYVARNC(n2, n3, js, je, var, varname, filename)
+  subroutine read_historyVARNC(n2, n3, js, je, var, varname, filename)
     use netcdf
 
     integer :: n2, n3, nzg, js, je, i, j, irec, iun, k, n
@@ -1106,10 +1106,10 @@ CONTAINS
 
     end if
 
-  end subroutine readhistoryvarnc
+  end subroutine read_historyvarnc
 
 !******************************************************************************************************
-  subroutine READHISTORYBYTEVARNC(n2, n3, js, je, var, varname, filename)
+  subroutine read_historyBYTEVARNC(n2, n3, js, je, var, varname, filename)
     use netcdf
 
     integer :: n2, n3, nzg, js, je, i, j, irec, iun, k, n
@@ -1168,10 +1168,10 @@ CONTAINS
 
     end if
 
-  end subroutine readhistorybytevarnc
+  end subroutine read_historybytevarnc
 
 !******************************************************************************************************
-  subroutine READHISTORYNCblock(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, filename)
+  subroutine read_historyNCblock(n2, n3, js, je, nzg, smoi, smoiwtd, intercepstore, wtd, filename)
     use netcdf
 
     integer :: n2, n3, nzg, js, je, i, j, irec, iun, k, n, n3big2, ns2, nn2
@@ -1384,7 +1384,7 @@ CONTAINS
 
     end if
 
-  end subroutine readhistoryncblock
+  end subroutine read_historyncblock
 
 !     ******************************************************************
   subroutine WRITEOUTPUT(n2, n3, js, je, nzg, smoi, waterdeficit, watext, wtd, smoiwtd, qsrun, rech, qsprings, qlat, pet, ppacum &
