@@ -39,11 +39,8 @@ CONTAINS
     end do
 
 !Calculate lateral flow
-
     IF (freedrain .eq. 0.) then
-
       qlat = 0.
-
       do j = js, je
         do i = 1, n2
           nsoil = soiltextures(1, i, j)
@@ -254,7 +251,6 @@ CONTAINS
         soiltxt(0) = soiltxt(1)
 
         do k = 1, nzg
-
           call SOILFLUXES_EQSMOI(i, j, nzg, k, dtll, slz, dz, soiltextures(1, i, j), smoibotbc)
 
           nsoil = soiltxt(k)

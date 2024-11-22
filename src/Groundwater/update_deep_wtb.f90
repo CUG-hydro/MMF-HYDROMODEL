@@ -53,7 +53,7 @@ subroutine update_deep_wtb(imax, jmax, js, je, nzg, slz, dz, soiltxt, wtd, botto
   DO j = js + 1, je - 1
     DO i = 1, imax
       if (landmask(i, j) .eq. 1) then
-        if (i .eq. 300 .and. j .eq. 300) write (6, *) 'mirar qlat', qlat(i, j), qslat(i, j), wtd(i, j)
+        ! if (i .eq. 300 .and. j .eq. 300) write (6, *) 'mirar qlat', qlat(i, j), qslat(i, j), wtd(i, j)
 !Total groundwater balance in the cell
         totwater = qlat(i, j) - qslat(i, j) - deeprech(i, j)
 

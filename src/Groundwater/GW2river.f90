@@ -5,7 +5,7 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
   integer, dimension(2, imax, js:je) :: soiltxt
   integer, dimension(imax, js:je) :: landmask
   real, dimension(imax, js:je) :: wtd, maxdepth, riverdepth, width, length, area, qrf, fdepth
-  real :: riversurface, deltat, soilwatercap, rcond, rdepth, hydcon
+  real :: riversurface, deltat, soilwatercap, rcond, rdepth, T2
   real :: frac
   
   soilwatercap = 0.
@@ -20,13 +20,12 @@ subroutine GW2RIVER(imax, js, je, nzg, slz, deltat, soiltxt, landmask, wtd, maxd
       riversurface = -(maxdepth(i, j) - rdepth)
       if (riversurface .ge. 0.) cycle      !this just in case...
       
-      ! BUG: 未考虑河床的厚度。
-      hydcon = Ksat(nsoil)*clamp(exp((-maxdepth(i, j) + 1.5)/fdepth(i, j)), 0.1, 1.)
-      rcond = width(i, j)*length(i, j)*hydcon
+      T2 = Ksat(nsoil)*clamp(exp((-maxdepth(i, j) + 1.5)/fdepth(i, j)), 0.1, 1.) ! Fan 2007, Eq. 6
+      rcond = width(i, j)*length(i, j) * T2
 
       if (wtd(i, j) .gt. riversurface) then
 
-        qrf(i, j) = rcond*(wtd(i, j) - riversurface)*(deltat/area(i, j))
+        qrf(i, j) = rcond*(wtd(i, j) - riversurface)* deltat / area(i, j)
 
 !limit it to prevent sudden drops , lets say 50mm per day 0.05/86400.
 !                  qrf(i,j)=min(qrf(i,j),deltat*0.05/86400.)
